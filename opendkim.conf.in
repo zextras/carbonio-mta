@@ -1,7 +1,7 @@
-UserID                zimbra:zimbra
+UserID                zextras:zextras
 UMask                 022
 Socket                %%zimbraInetMode%%:8465@[%%zimbraLocalBindAddress%%]
-PidFile               /opt/zimbra/log/opendkim.pid
+PidFile               /opt/zextras/log/opendkim.pid
 
 LDAPBindUser		uid=zmpostfix,cn=appaccts,cn=zimbra
 LDAPBindPassword	@@ldap_postfix_password@@
@@ -46,7 +46,7 @@ SignatureTTL          0
 StrictHeaders         no
 StrictTestMode        no
 SubDomains            no
-InternalHosts         file:/opt/zimbra/conf/opendkim-localnets.conf
+InternalHosts         file:/opt/zextras/conf/opendkim-localnets.conf
 
 SendReports           no
 Diagnostics           no
@@ -57,6 +57,6 @@ Syslog                yes
 SyslogFacility        LOCAL0
 SyslogSuccess         no
 SoftwareHeader        yes
-TemporaryDirectory    /opt/zimbra/data/tmp
+TemporaryDirectory    /opt/zextras/data/tmp
 KeepTemporaryFiles    no
 MilterDebug           0
