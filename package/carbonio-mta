@@ -50,20 +50,6 @@ POLICY_RULES="$(cat <<EOF
 EOF
 )"
 
-# allow user-management service to access mailbox
-cat <<EOF | consul config write -
-{
-  "kind": "service-intentions",
-  "name": "${SERVICE_NAME}",
-  "sources": [
-    {
-      "name": "carbonio-mailbox",
-      "action": "allow"
-    }
-  ]
-}
-EOF
-
 # create or update policy for the specific service (this will be shared across cluster)
 consul acl policy create -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules "${POLICY_RULES}" >/dev/null 2>&1
 if [[ "$?" != "0" ]]; then
