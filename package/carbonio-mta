@@ -26,7 +26,7 @@ fi
 # limit secret visibility as much as possible
 export -n SETUP_CONSUL_TOKEN
 
-POLICY_NAME='${SERVICE_NAME}-policy'
+POLICY_NAME="${SERVICE_NAME}-policy"
 POLICY_DESCRIPTION='Carbonio MTA service policy for config generation and for sidecar proxy'
 POLICY_RULES="$(cat <<EOF
 "key_prefix" = {
