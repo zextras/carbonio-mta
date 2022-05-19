@@ -74,3 +74,5 @@ consul reload
 export -n CONSUL_HTTP_TOKEN
 
 systemctl restart ${SERVICE_NAME}-sidecar.service
+
+trap - EXIT
