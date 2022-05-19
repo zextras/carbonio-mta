@@ -27,7 +27,7 @@ fi
 export -n SETUP_CONSUL_TOKEN
 
 POLICY_NAME="${SERVICE_NAME}-policy"
-POLICY_DESCRIPTION='Carbonio MTA service policy for config generation and for sidecar proxy'
+POLICY_DESCRIPTION='Carbonio MTA service policy for config generation and sidecar proxy'
 POLICY_RULES="$(cat <<EOF
 "key_prefix" = {
   "carbonio-mta/" = {
@@ -55,7 +55,7 @@ consul acl policy create -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTI
 if [[ "$?" != "0" ]]; then
     consul acl policy update -no-merge -name "${POLICY_NAME}" -description "${POLICY_DESCRIPTION}" -rules "${POLICY_RULES}"
     if [[ "$?" != "0" ]]; then
-      echo "Setup failed: Cannot update policy for ${POLICY_NAME}"
+      echo "Setup failed: Cannot update policy ${POLICY_NAME}"
       exit 1
     fi
 fi
