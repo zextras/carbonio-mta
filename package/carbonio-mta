@@ -49,6 +49,7 @@ set -e
 consul config write ${SERVICE_BASE_DIR}/service-protocol.json
 
 # Allow other services to contact this service (nothing at the moment)
+consul config write ${SERVICE_BASE_DIR}/intentions.json
 
 # Create ACL token
 if [[ ! -f "${SERVICE_BASE_DIR}/token" ]]; then
