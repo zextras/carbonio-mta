@@ -1,0 +1,17 @@
+# see https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component for more component conf info
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: carbonio-mta
+  title: Carbonio MTA
+  description: |
+    Project containing configuration files for MTA and MTA Consul service registration
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - mta
+    - carbonio-mta
+spec:
+  type: configuration
+  lifecycle: production
+  owner: new-bacon-monsters
