@@ -138,7 +138,7 @@ MaxThreads %%zimbraClamAVMaxThreads%%
 # This option specifies the time (in seconds) after which clamd should
 # timeout if a client doesn't provide any initial command after connecting.
 # Default: 30
-#CommandReadTimeout 5
+#CommandReadTimeout 30
 
 # This option specifies how long to wait (in miliseconds) if the send buffer is full.
 # Keep this value low to prevent clamd hanging
@@ -146,7 +146,7 @@ MaxThreads %%zimbraClamAVMaxThreads%%
 # Default: 500
 #SendBufTimeout 200
 
-# Maximum number of queued items (including those being processed by MaxThreads threads)
+# Maximum number of queued items (including those being processed by MaxThreads threads).
 # It is recommended to have this value at least twice MaxThreads if possible.
 # WARNING: you shouldn't increase this too much to avoid running out  of file descriptors,
 # the following condition should hold:
@@ -167,7 +167,7 @@ MaxThreads %%zimbraClamAVMaxThreads%%
 
 # Maximum depth directories are scanned at.
 # Default: 15
-#MaxDirectoryRecursion 20
+MaxDirectoryRecursion 30
 
 # Follow directory symlinks.
 # Default: no
