@@ -19,4 +19,5 @@ services {
   }
   name = "carbonio-mta"
   port = 25
+  tags = ["mta-out”, “mta-in”] 
 }

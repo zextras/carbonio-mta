@@ -1,0 +1,12 @@
+{
+    "Kind": "service-resolver",
+    "Name": "carbonio-mta",
+    "Subsets": {
+      "in": {
+        "Filter": "Service.Meta.service_type == \"in\""
+      },
+      "out": {
+        "Filter": "Service.Meta.service_type == \"out\""
+      }
+    }
+  }

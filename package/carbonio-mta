@@ -51,6 +51,9 @@ consul config write ${SERVICE_BASE_DIR}/service-protocol.json
 # Allow other services to contact this service (nothing at the moment)
 consul config write ${SERVICE_BASE_DIR}/intentions.json
 
+# Declare the service resolver to use tags
+consul config write ${SERVICE_BASE_DIR}/service-resolver.json
+
 # Create ACL token
 if [[ ! -f "${SERVICE_BASE_DIR}/token" ]]; then
     # create the token
@@ -59,6 +62,9 @@ if [[ ! -f "${SERVICE_BASE_DIR}/token" ]]; then
     chown ${SERVICE_USER}:${SERVICE_GROUP} ${SERVICE_BASE_DIR}/token
     chmod 0600 ${SERVICE_BASE_DIR}/token
 fi
+
+# register prepared query
+curl --request POST --data @${SERVICE_BASE_DIR}/prepared-query.json http://127.0.0.1:8500/v1/query?token=${CONSUL_HTTP_TOKEN}
 
 consul reload
 
