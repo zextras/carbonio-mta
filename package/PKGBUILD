@@ -1,0 +1,261 @@
+pkgname="carbonio-mta"
+pkgver="4.0.35"
+pkgrel="1"
+pkgdesc="An open-source, community-driven email server"
+maintainer="Zextras <packages@zextras.com>"
+copyright=(
+  "2022-2024, Zextras <https://www.zextras.com>"
+  "2022, Synacor, Inc."
+)
+license=(
+  "GPL-2.0-only"
+)
+url="https://github.com/zextras"
+section="mail"
+priority="optional"
+arch=('x86_64')
+depends__apt=(
+  "carbonio-altermime"
+  "carbonio-amavisd"
+  "carbonio-clamav"
+  "carbonio-core"
+  "carbonio-mariadb"
+  "carbonio-opendkim"
+  "carbonio-perl-mail-spamassassin"
+  "carbonio-pflogsumm"
+  "carbonio-policyd"
+  "carbonio-postfix"
+  "carbonio-spamassassin-rules"
+  "sqlite3"
+)
+depends__yum=(
+  "carbonio-altermime"
+  "carbonio-amavisd"
+  "carbonio-clamav"
+  "carbonio-core"
+  "carbonio-mariadb"
+  "carbonio-opendkim"
+  "carbonio-perl-mail-spamassassin"
+  "carbonio-pflogsumm"
+  "carbonio-policyd"
+  "carbonio-postfix"
+  "carbonio-spamassassin-rules"
+  "sqlite"
+)
+provides=(
+  "mail-transport-agent"
+)
+conflicts=(
+  "mail-transport-agent"
+)
+
+package() {
+  cd "${srcdir}"
+
+  # consul for mta
+  install -Dm 755 carbonio-mta \
+    "${pkgdir}/usr/bin/carbonio-mta"
+  install -Dm 644 carbonio-mta-sidecar.service \
+    "${pkgdir}/lib/systemd/system/carbonio-mta-sidecar.service"
+  install -Dm 644 carbonio-mta.hcl \
+    "${pkgdir}/etc/zextras/service-discover/carbonio-mta.hcl"
+  install -Dm 644 carbonio-mta.sh \
+    "${pkgdir}/etc/zextras/pending-setups.d/carbonio-mta.sh"
+  install -Dm 644 policies.json \
+    "${pkgdir}/etc/carbonio/mta/service-discover/policies.json"
+  install -Dm 644 intentions.json \
+    "${pkgdir}/etc/carbonio/mta/service-discover/intentions.json"
+  install -Dm 644 service-protocol.json \
+    "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
+
+  # postfix
+  # TODO: add these file from carbonio-postfix
+  install -D opt/zextras/common/conf/master.cf.in \
+    "${pkgdir}/opt/zextras/common/conf/master.cf.in"
+  install -D opt/zextras/common/conf/tag_as_foreign.re.in \
+    "${pkgdir}/opt/zextras/common/conf/tag_as_foreign.re.in"
+  install -D opt/zextras/common/conf/tag_as_originating.re.in \
+    "${pkgdir}/opt/zextras/common/conf/tag_as_originating.re.in"
+
+  mkdir -p "${pkgdir}/opt/zextras/data/altermime/"
+
+  # TODO: add antispamdb from carbonio-amavis repo
+  install -D opt/zextras/data/amavisd/mysql/antispamdb.sql \
+    "${pkgdir}/opt/zextras/data/amavisd/mysql/antispamdb.sql"
+
+  mkdir -p "${pkgdir}/opt/zextras/data/cbpolicyd/"
+  mkdir -p "${pkgdir}/opt/zextras/data/cbpolicyd/db/"
+  mkdir -p "${pkgdir}/opt/zextras/data/clamav/"
+  mkdir -p "${pkgdir}/opt/zextras/data/opendkim/"
+  mkdir -p "${pkgdir}/opt/zextras/data/postfix/"
+
+}
+
+postinst__apt() {
+  #Symlinks
+
+  if [ ! -e "/usr/sbin/sendmail" -o -L "/usr/bin/sendmail" ]; then
+    if [ -L "/usr/bin/sendmail" ]; then
+      if [ -x /bin/readlink ]; then
+        SMPATH=$(/bin/readlink /usr/sbin/sendmail)
+        if [ x$SMPATH = x"/opt/zextras/postfix/sbin/sendmail" -o x$SMPATH = x"/opt/zextras/common/sbin/sendmail" ]; then
+          /bin/rm -f /usr/sbin/sendmail
+          ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
+        fi
+      fi
+    else
+      ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
+    fi
+  fi
+
+  chown zextras:zextras /opt/zextras/common/conf/master.cf.in
+  chmod 440 /opt/zextras/common/conf/master.cf.in
+  chown zextras:zextras /opt/zextras/common/conf/tag_as_*.re.in
+
+  mkdir -p /opt/zextras/data/amavisd/db
+  mkdir -p /opt/zextras/data/amavisd/tmp
+  mkdir -p /opt/zextras/data/amavisd/var
+  mkdir -p /opt/zextras/data/amavisd/quarantine
+  chown -R zextras:zextras /opt/zextras/data/amavisd/*
+
+  mkdir -p /opt/zextras/data/opendkim
+  chown -R zextras:zextras /opt/zextras/data/opendkim
+
+  mkdir -p /opt/zextras/data/clamav/db
+  chown -R zextras:zextras /opt/zextras/data/clamav/db
+
+  mkdir -p /opt/zextras/data/postfix/spool/pid
+  chown postfix:zextras /opt/zextras/data/postfix
+  chown root:postfix /opt/zextras/data/postfix/spool
+  chown postfix:root /opt/zextras/data/postfix/spool/pid
+
+  chown zextras:zextras /opt/zextras/data
+
+  if [ ! -f /opt/zextras/common/conf/main.cf ]; then
+    touch /opt/zextras/common/conf/main.cf
+    chown zextras:zextras /opt/zextras/common/conf/main.cf
+  fi
+
+  if [ ! -e /etc/aliases -o -L /etc/aliases ]; then
+    if [ -L /etc/aliases ]; then
+      if [ -x /bin/readlink ]; then
+        SMPATH=$(/bin/readlink /etc/aliases)
+        if [ x$SMPATH = x"/opt/zextras/postfix/conf/aliases" -o x$SMPATH = x"/opt/zextras/common/conf/aliases" ]; then
+          rm -f /etc/aliases
+          ln -s /opt/zextras/common/conf/aliases /etc/aliases
+        fi
+      fi
+    else
+      ln -s /opt/zextras/common/conf/aliases /etc/aliases
+    fi
+  fi
+
+  if [ -x "/opt/zextras/libexec/zmfixperms" ]; then
+    /opt/zextras/libexec/zmfixperms
+  fi
+
+  chgrp zextras /opt/zextras/common/conf
+  chmod g+w /opt/zextras/common/conf
+
+  # mta consul
+  getent group 'carbonio-mta' >/dev/null ||
+    groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null ||
+    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-mta.service >/dev/null 2>&1 || :
+    systemctl enable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  echo "======================================================"
+  echo "Carbonio mta installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+}
+
+postinst__yum() {
+
+  chown zextras:zextras /opt/zextras/common/conf/master.cf.in
+  chmod 440 /opt/zextras/common/conf/master.cf.in
+  chown zextras:zextras /opt/zextras/common/conf/tag_as_*.re.in
+
+  mkdir -p /opt/zextras/data/amavisd/db
+  mkdir -p /opt/zextras/data/amavisd/tmp
+  mkdir -p /opt/zextras/data/amavisd/var
+  mkdir -p /opt/zextras/data/amavisd/quarantine
+  chown -R zextras:zextras /opt/zextras/data/amavisd/*
+
+  mkdir -p /opt/zextras/data/opendkim
+  chown -R zextras:zextras /opt/zextras/data/opendkim
+
+  mkdir -p /opt/zextras/data/clamav/db
+  chown -R zextras:zextras /opt/zextras/data/clamav/db
+
+  mkdir -p /opt/zextras/data/postfix/spool/pid
+  chown postfix:zextras /opt/zextras/data/postfix
+  chown root:postfix /opt/zextras/data/postfix/spool
+  chown postfix:root /opt/zextras/data/postfix/spool/pid
+
+  chown zextras:zextras /opt/zextras/data
+
+  if [ ! -f /opt/zextras/common/conf/main.cf ]; then
+    touch /opt/zextras/common/conf/main.cf
+    chown zextras:zextras /opt/zextras/common/conf/main.cf
+  fi
+
+  if [ ! -e /etc/aliases -o -L /etc/aliases ]; then
+    if [ -L /etc/aliases ]; then
+      if [ -x /bin/readlink ]; then
+        SMPATH=$(/bin/readlink /etc/aliases)
+        if [ x$SMPATH = x"/opt/zextras/postfix/conf/aliases" -o x$SMPATH = x"/opt/zextras/common/conf/aliases" ]; then
+          rm -f /etc/aliases
+          ln -s /opt/zextras/common/conf/aliases /etc/aliases
+        fi
+      fi
+    else
+      ln -s /opt/zextras/common/conf/aliases /etc/aliases
+    fi
+  fi
+
+  if [ -x "/opt/zextras/libexec/zmfixperms" ]; then
+    /opt/zextras/libexec/zmfixperms
+  fi
+
+  chgrp zextras /opt/zextras/common/conf
+  chmod g+w /opt/zextras/common/conf
+
+  # mta consul
+  getent group 'carbonio-mta' >/dev/null ||
+    groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null ||
+    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-mta.service >/dev/null 2>&1 || :
+    systemctl enable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  echo "======================================================"
+  echo "Carbonio mta installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+}
+
+prerm() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable carbonio-mta.service >/dev/null 2>&1 || :
+    systemctl --no-reload disable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
+    systemctl stop carbonio-mta.service >/dev/null 2>&1 || :
+    systemctl stop carbonio-mta-sidecar.service >/dev/null 2>&1 || :
+  fi
+}
+
+postrm() {
+  rm -f /etc/carbonio/mta/service-discover/token
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+  fi
+}
