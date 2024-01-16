@@ -68,19 +68,19 @@ package() {
   install -Dm 644 service-protocol.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
 
+  cd "${srcdir}/.."
   # postfix
-  # TODO: add these file from carbonio-postfix
-  install -D opt/zextras/common/conf/master.cf.in \
+  install -D conf/postfix/master.cf.in \
     "${pkgdir}/opt/zextras/common/conf/master.cf.in"
-  install -D opt/zextras/common/conf/tag_as_foreign.re.in \
+  install -D conf/postfix/tag_as_foreign.re.in \
     "${pkgdir}/opt/zextras/common/conf/tag_as_foreign.re.in"
-  install -D opt/zextras/common/conf/tag_as_originating.re.in \
+  install -D conf/postfix/tag_as_originating.re.in \
     "${pkgdir}/opt/zextras/common/conf/tag_as_originating.re.in"
 
   mkdir -p "${pkgdir}/opt/zextras/data/altermime/"
 
-  # TODO: add antispamdb from carbonio-amavis repo
-  install -D opt/zextras/data/amavisd/mysql/antispamdb.sql \
+  # amavisd
+  install -D conf/amavisd/mysql/antispamdb.sql \
     "${pkgdir}/opt/zextras/data/amavisd/mysql/antispamdb.sql"
 
   mkdir -p "${pkgdir}/opt/zextras/data/cbpolicyd/"
