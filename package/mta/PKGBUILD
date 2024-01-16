@@ -50,7 +50,7 @@ conflicts=(
 )
 
 package() {
-  cd "${srcdir}"
+  cd "${srcdir}/../../staging/package"
 
   # consul for mta
   install -Dm 755 carbonio-mta \
@@ -59,7 +59,7 @@ package() {
     "${pkgdir}/lib/systemd/system/carbonio-mta-sidecar.service"
   install -Dm 644 carbonio-mta.hcl \
     "${pkgdir}/etc/zextras/service-discover/carbonio-mta.hcl"
-  install -Dm 644 carbonio-mta.sh \
+  install -Dm 644 carbonio-mta-setup.sh \
     "${pkgdir}/etc/zextras/pending-setups.d/carbonio-mta.sh"
   install -Dm 644 policies.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/policies.json"
@@ -68,7 +68,8 @@ package() {
   install -Dm 644 service-protocol.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
 
-  cd "${srcdir}/.."
+  cd "${srcdir}/../../staging"
+
   # postfix
   install -D conf/postfix/master.cf.in \
     "${pkgdir}/opt/zextras/common/conf/master.cf.in"

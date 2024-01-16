@@ -59,7 +59,7 @@ pipeline {
                     }
                     steps {
                         unstash 'staging'
-                        sh 'cp -r pkg/* /tmp'
+                        sh 'cp -r ./* /tmp'
                         sh 'sudo yap build ubuntu-jammy /tmp'
                         stash includes: 'artifacts/',
                                 name: 'artifacts-ubuntu-jammy'
@@ -79,7 +79,7 @@ pipeline {
                     }
                     steps {
                         unstash 'staging'
-                        sh 'cp -r pkg/* /tmp'
+                        sh 'cp -r ./* /tmp'
                         sh 'sudo yap build rocky-8 /tmp'
                         stash includes: 'artifacts/x86_64/*el8*.rpm',
                                 name: 'artifacts-rocky-8'
@@ -98,7 +98,7 @@ pipeline {
                     }
                     steps {
                         unstash 'staging'
-                        sh 'cp -r pkg/* /tmp'
+                        sh 'cp -r ./* /tmp'
                         sh 'sudo yap build rocky-9 /tmp'
                         stash includes: 'artifacts/x86_64/*el9*.rpm',
                                 name: 'artifacts-rocky-9'
