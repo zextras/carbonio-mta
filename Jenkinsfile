@@ -40,7 +40,7 @@ pipeline {
                     steps {
                         unstash 'staging'
                         sh 'cp -r ./* /tmp'
-                        sh 'sudo yap build ubuntu-focal /tmp'
+                        sh 'sudo yap build ubuntu-focal /tmp/staging/package'
                         stash includes: 'artifacts/',
                                 name: 'artifacts-ubuntu-focal'
                     }
@@ -60,7 +60,7 @@ pipeline {
                     steps {
                         unstash 'staging'
                         sh 'cp -r ./* /tmp'
-                        sh 'sudo yap build ubuntu-jammy /tmp'
+                        sh 'sudo yap build ubuntu-jammy /tmp/staging/package'
                         stash includes: 'artifacts/',
                                 name: 'artifacts-ubuntu-jammy'
                     }
@@ -80,7 +80,7 @@ pipeline {
                     steps {
                         unstash 'staging'
                         sh 'cp -r ./* /tmp'
-                        sh 'sudo yap build rocky-8 /tmp'
+                        sh 'sudo yap build rocky-8 /tmp/staging/package'
                         stash includes: 'artifacts/x86_64/*el8*.rpm',
                                 name: 'artifacts-rocky-8'
                     }
@@ -99,7 +99,7 @@ pipeline {
                     steps {
                         unstash 'staging'
                         sh 'cp -r ./* /tmp'
-                        sh 'sudo yap build rocky-9 /tmp'
+                        sh 'sudo yap build rocky-9 /tmp/staging/package'
                         stash includes: 'artifacts/x86_64/*el9*.rpm',
                                 name: 'artifacts-rocky-9'
                     }
