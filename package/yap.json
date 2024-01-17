@@ -1,6 +1,6 @@
 {
   "name": "An open-source, community-driven email server",
-  "Description": "Timezone Data",
+  "Description": "MTA",
   "buildDir": "/tmp/",
   "output": "artifacts",
   "Projects": [
