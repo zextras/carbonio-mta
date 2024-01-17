@@ -28,7 +28,7 @@ pipeline {
             steps {
                 sh 'mkdir staging'
                 sh 'cp -r package conf staging'
-                stash includes: 'staging', name: 'staging'
+                stash includes: 'staging/**', name: 'staging'
             }
         }
         stage('Package') {
