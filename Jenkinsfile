@@ -33,7 +33,7 @@ pipeline {
         }
 
         stage('Build deb/rpm') {
-                    parallel {
+            parallel {
                         stage('Ubuntu') {
                             agent {
                                 node {
@@ -60,7 +60,7 @@ pipeline {
                                 }
                             }
                             steps {
-                                unstash 'project'
+                                unstash 'staging'
                                 sh 'cp -r staging /tmp'
                                 sh 'sudo yap build rocky /tmp/staging/package'
                                 stash includes: 'artifacts/x86_64/*.rpm', name: 'artifacts-rpm'
@@ -72,7 +72,7 @@ pipeline {
                             }
                         }
                     }
-                }
+        }
 
         stage('Upload To Playground') {
             when {
