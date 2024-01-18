@@ -50,7 +50,10 @@ conflicts=(
 )
 
 package() {
-  cd "${srcdir}/../../staging/package"
+
+  # /tmp/mta/src
+  cd "${srcdir}/.."
+  ls
 
   # consul for mta
   install -Dm 755 carbonio-mta \
@@ -67,8 +70,6 @@ package() {
     "${pkgdir}/etc/carbonio/mta/service-discover/intentions.json"
   install -Dm 644 service-protocol.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
-
-  cd "${srcdir}/../../staging"
 
   # postfix
   install -D conf/postfix/master.cf.in \
