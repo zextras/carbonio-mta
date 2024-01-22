@@ -53,7 +53,6 @@ package() {
 
   # /tmp/mta/src
   cd "${srcdir}/.."
-  ls
 
   # consul for mta
   install -Dm 755 carbonio-mta \
