@@ -1,3 +1,0 @@
-zimbra_url: %%getAllMtaAuthURLs%%
-zimbra_cert_file: /opt/zextras/conf/smtpd.crt
-zimbra_cert_check: off
