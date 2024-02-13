@@ -80,10 +80,6 @@ package() {
 
   mkdir -p "${pkgdir}/opt/zextras/data/altermime/"
 
-  # amavisd
-  install -D conf/amavisd/mysql/antispamdb.sql \
-    "${pkgdir}/opt/zextras/data/amavisd/mysql/antispamdb.sql"
-
   mkdir -p "${pkgdir}/opt/zextras/data/cbpolicyd/"
   mkdir -p "${pkgdir}/opt/zextras/data/cbpolicyd/db/"
   mkdir -p "${pkgdir}/opt/zextras/data/clamav/"
