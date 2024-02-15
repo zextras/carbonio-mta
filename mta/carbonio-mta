@@ -1,4 +1,8 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
 
 SERVICE_NAME="carbonio-mta"
 SERVICE_USER="carbonio-mta"
