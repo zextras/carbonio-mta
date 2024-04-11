@@ -50,19 +50,18 @@ conflicts=(
 )
 
 package() {
-
   # /tmp/mta/src
   cd "${srcdir}/.."
 
   # consul for mta
-  install -Dm 755 carbonio-mta \
-    "${pkgdir}/usr/bin/carbonio-mta"
-  install -Dm 644 carbonio-mta-sidecar.service \
-    "${pkgdir}/lib/systemd/system/carbonio-mta-sidecar.service"
-  install -Dm 644 carbonio-mta.hcl \
-    "${pkgdir}/etc/zextras/service-discover/carbonio-mta.hcl"
-  install -Dm 644 carbonio-mta-setup.sh \
-    "${pkgdir}/etc/zextras/pending-setups.d/carbonio-mta.sh"
+  install -Dm 755 "${pkgname}" \
+    "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 644 "${pkgname}-sidecar.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
+  install -Dm 644 "${pkgname}.hcl" \
+    "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
+  install -Dm 644 "${pkgname}-setup.sh" \
+    "${pkgdir}/etc/zextras/pending-setups.d/${pkgname}.sh"
   install -Dm 644 policies.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/policies.json"
   install -Dm 644 intentions.json \
@@ -86,6 +85,33 @@ package() {
   mkdir -p "${pkgdir}/opt/zextras/data/opendkim/"
   mkdir -p "${pkgdir}/opt/zextras/data/postfix/"
 
+  # systemd units and target
+  mkdir "${pkgdir}/lib/systemd/system/${pkgname}.target.wants"
+  install -Dm 644 "${pkgname}.target" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target"
+
+  ln -sf "/lib/systemd/system/carbonio-altermime-config.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-altermime-config.service"
+  ln -sf "/lib/systemd/system/carbonio-antivirus.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-antivirus.service"
+  ln -sf "/lib/systemd/system/carbonio-configd.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-configd.service"
+  ln -sf "/lib/systemd/system/carbonio-freshclam.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-freshclam.service"
+  ln -sf "/lib/systemd/system/carbonio-mailthreat.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat.service"
+  ln -sf "/lib/systemd/system/carbonio-milter.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-milter.service"
+  ln -sf "/lib/systemd/system/carbonio-opendkim.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-opendkim.service"
+  ln -sf "/lib/systemd/system/carbonio-policyd.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-policyd.service"
+  ln -sf "/lib/systemd/system/carbonio-postfix.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-postfix.service"
+  ln -sf "/lib/systemd/system/carbonio-saslauthd.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-saslauthd.service"
+  ln -sf "/lib/systemd/system/carbonio-stats.service" \
+    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
 }
 
 postinst__apt() {
