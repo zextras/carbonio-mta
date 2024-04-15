@@ -1,0 +1,7 @@
+{
+  "Name": "carbonio-mta-out",
+  "Service": {
+    "Service": "carbonio-mta",
+    "Tags": ["carbonio-mta-inout"]
+  }
+}

@@ -70,6 +70,8 @@ package() {
     "${pkgdir}/etc/carbonio/mta/service-discover/intentions.json"
   install -Dm 644 service-protocol.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
+  install -Dm 644 prepared-query.json \
+    "${pkgdir}/etc/carbonio/mta/service-discover/prepared-query.json"
 
   # postfix
   install -D conf/postfix/master.cf.in \
