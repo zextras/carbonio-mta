@@ -1,5 +1,5 @@
 pkgname="carbonio-mta"
-pkgver="4.1.1"
+pkgver="4.1.2"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 maintainer="Zextras <packages@zextras.com>"
@@ -56,6 +56,8 @@ package() {
   # consul for mta
   install -Dm 755 "${pkgname}" \
     "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 755 "${pkgname}-flow" \
+    "${pkgdir}/usr/bin/${pkgname}-flow"
   install -Dm 644 "${pkgname}-sidecar.service" \
     "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
   install -Dm 644 "${pkgname}.hcl" \
