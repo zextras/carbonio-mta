@@ -1,0 +1,26 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+if [[ $(id -u) -ne 0 ]]; then
+  echo "Please run as root"
+  exit 1
+fi
+
+if [[ "$1" != "setup" ]]; then
+  echo "Syntax: '${SERVICE_NAME} setup' to automatically configure the service"
+  exit 1;
+fi
+
+source /opt/zextras/bin/zmshutil || exit 1
+
+zmsetvars
+
+if [ "$mtaincomingonly" = "TRUE" ]; then
+    /bin/sed -i 's/carbonio-mta-inout/carbonio-mta-in/g' /etc/zextras/service-discover/carbonio-mta.hcl
+elif [ "$mtaincomingonly" = "FALSE" ] || [ -z $mtaincomingonly]; then
+    /bin/sed -i 's/carbonio-mta-in/carbonio-mta-inout/g' /etc/zextras/service-discover/carbonio-mta.hcl
+fi
+
+trap - EXIT

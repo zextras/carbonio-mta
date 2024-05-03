@@ -56,6 +56,8 @@ package() {
   # consul for mta
   install -Dm 755 "${pkgname}" \
     "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 755 "${pkgname}-flow" \
+    "${pkgdir}/usr/bin/${pkgname}-flow"
   install -Dm 644 "${pkgname}-sidecar.service" \
     "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
   install -Dm 644 "${pkgname}.hcl" \
@@ -68,6 +70,8 @@ package() {
     "${pkgdir}/etc/carbonio/mta/service-discover/intentions.json"
   install -Dm 644 service-protocol.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
+  install -Dm 644 prepared-query.json \
+    "${pkgdir}/etc/carbonio/mta/service-discover/prepared-query.json"
 
   # postfix
   install -D conf/postfix/master.cf.in \
