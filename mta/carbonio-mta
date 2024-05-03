@@ -66,7 +66,7 @@ chown ${SERVICE_USER}:${SERVICE_GROUP} ${SERVICE_BASE_DIR}/token
 chmod 0600 ${SERVICE_BASE_DIR}/token
 
 # register prepared query
-curl --request POST --data @${SERVICE_BASE_DIR}/prepared-query.json http://127.0.0.1:8500/v1/query?token=${CONSUL_HTTP_TOKEN}
+/opt/zextras/common/bin/curl --request POST --data @${SERVICE_BASE_DIR}/prepared-query.json http://127.0.0.1:8500/v1/query?token=${CONSUL_HTTP_TOKEN}
 
 consul reload
 
