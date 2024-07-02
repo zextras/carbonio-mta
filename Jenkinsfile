@@ -36,7 +36,14 @@ pipeline {
                             }
                             steps {
                                 unstash 'staging'
-                                sh 'sudo yap build ubuntu . -s'
+                                script {
+                                    if (BRANCH_NAME == 'devel') {
+                                        def timestamp = new Date().format('yyyyMMddHHmmss')
+                                        sh "yap build ubuntu . -r ${timestamp} -s"
+                                    } else {
+                                        sh 'yap build ubuntu . -s'
+                                    }
+                                }
                                 stash includes: 'artifacts/', name: 'artifacts-deb'
                             }
                             post {
@@ -54,7 +61,14 @@ pipeline {
                             }
                             steps {
                                 unstash 'staging'
-                                sh 'sudo yap build rocky-8 . -s'
+                                script {
+                                    if (BRANCH_NAME == 'devel') {
+                                        def timestamp = new Date().format('yyyyMMddHHmmss')
+                                        sh "yap build rocky-8 . -r ${timestamp} -s"
+                                    } else {
+                                        sh 'yap build rocky-8 . -s'
+                                    }
+                                }
                                 stash includes: 'artifacts/x86_64/*el8*.rpm', name: 'artifacts-rhel8'
                             }
                             post {
@@ -72,7 +86,14 @@ pipeline {
                             }
                             steps {
                                 unstash 'staging'
-                                sh 'sudo yap build rocky-9 . -s'
+                                script {
+                                    if (BRANCH_NAME == 'devel') {
+                                        def timestamp = new Date().format('yyyyMMddHHmmss')
+                                        sh "yap build rocky-9 . -r ${timestamp} -s"
+                                    } else {
+                                        sh 'yap build rocky-9 . -s'
+                                    }
+                                }
                                 stash includes: 'artifacts/x86_64/*el9*.rpm', name: 'artifacts-rhel9'
                             }
                             post {
