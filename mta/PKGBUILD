@@ -118,14 +118,12 @@ package() {
 postinst__apt() {
   #Symlinks
 
-  if [ ! -e "/usr/sbin/sendmail" -o -L "/usr/bin/sendmail" ]; then
+  if [ ! -e "/usr/sbin/sendmail" ] || [ -L "/usr/bin/sendmail" ]; then
     if [ -L "/usr/bin/sendmail" ]; then
-      if [ -x /bin/readlink ]; then
-        SMPATH=$(/bin/readlink /usr/sbin/sendmail)
-        if [ "$SMPATH" = "/opt/zextras/postfix/sbin/sendmail" ] || [ "$SMPATH" = "/opt/zextras/common/sbin/sendmail" ]; then
-          /bin/rm -f /usr/sbin/sendmail
-          ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
-        fi
+      SMPATH=$(readlink /usr/sbin/sendmail)
+      if [ "$SMPATH" = "/opt/zextras/postfix/sbin/sendmail" ] || [ "$SMPATH" = "/opt/zextras/common/sbin/sendmail" ]; then
+        rm -f /usr/sbin/sendmail
+        ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
       fi
     else
       ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
@@ -162,12 +160,10 @@ postinst__apt() {
 
   if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
     if [ -L /etc/aliases ]; then
-      if [ -x /bin/readlink ]; then
-        SMPATH=$(/bin/readlink /etc/aliases)
-        if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
-          rm -f /etc/aliases
-          ln -s /opt/zextras/common/conf/aliases /etc/aliases
-        fi
+      SMPATH=$(readlink /etc/aliases)
+      if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
+        rm -f /etc/aliases
+        ln -s /opt/zextras/common/conf/aliases /etc/aliases
       fi
     else
       ln -s /opt/zextras/common/conf/aliases /etc/aliases
@@ -189,6 +185,86 @@ postinst__apt() {
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
+  fi
+
+  echo "======================================================"
+  echo "Carbonio mta installed successfully!"
+  echo "You must run pending-setups to configure it correctly."
+  echo "======================================================"
+}
+
+postinst__ubuntu_noble() {
+  #Symlinks
+
+  if [ ! -e "/usr/sbin/sendmail" ] || [ -L "/usr/bin/sendmail" ]; then
+    if [ -L "/usr/bin/sendmail" ]; then
+      SMPATH=$(readlink /usr/sbin/sendmail)
+      if [ "$SMPATH" = "/opt/zextras/postfix/sbin/sendmail" ] || [ "$SMPATH" = "/opt/zextras/common/sbin/sendmail" ]; then
+        rm -f /usr/sbin/sendmail
+        ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
+      fi
+    else
+      ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
+    fi
+  fi
+
+  chown zextras:zextras /opt/zextras/common/conf/master.cf.in
+  chmod 440 /opt/zextras/common/conf/master.cf.in
+  chown zextras:zextras /opt/zextras/common/conf/tag_as_*.re.in
+
+  mkdir -p /opt/zextras/data/amavisd/db
+  mkdir -p /opt/zextras/data/amavisd/tmp
+  mkdir -p /opt/zextras/data/amavisd/var
+  mkdir -p /opt/zextras/data/amavisd/quarantine
+  chown -R zextras:zextras /opt/zextras/data/amavisd/*
+
+  mkdir -p /opt/zextras/data/opendkim
+  chown -R zextras:zextras /opt/zextras/data/opendkim
+
+  mkdir -p /opt/zextras/data/clamav/db
+  chown -R zextras:zextras /opt/zextras/data/clamav/db
+
+  mkdir -p /opt/zextras/data/postfix/spool/pid
+  chown postfix:zextras /opt/zextras/data/postfix
+  chown root:postfix /opt/zextras/data/postfix/spool
+  chown postfix:root /opt/zextras/data/postfix/spool/pid
+
+  chown zextras:zextras /opt/zextras/data
+
+  if [ ! -f /opt/zextras/common/conf/main.cf ]; then
+    touch /opt/zextras/common/conf/main.cf
+    chown zextras:zextras /opt/zextras/common/conf/main.cf
+  fi
+
+  if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
+    if [ -L /etc/aliases ]; then
+      SMPATH=$(readlink /etc/aliases)
+      if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
+        rm -f /etc/aliases
+        ln -s /opt/zextras/common/conf/aliases /etc/aliases
+      fi
+    else
+      ln -s /opt/zextras/common/conf/aliases /etc/aliases
+    fi
+  fi
+
+  if [ -x "/opt/zextras/libexec/zmfixperms" ]; then
+    /opt/zextras/libexec/zmfixperms
+  fi
+
+  chgrp zextras /opt/zextras/common/conf
+  chmod g+w /opt/zextras/common/conf
+
+  # mta consul
+  getent group 'carbonio-mta' >/dev/null ||
+    groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null ||
+    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable carbonio-mta.target >/dev/null 2>&1 || :
     systemctl enable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
   fi
 
@@ -230,12 +306,10 @@ postinst__rocky_8() {
 
   if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
     if [ -L /etc/aliases ]; then
-      if [ -x /bin/readlink ]; then
-        SMPATH=$(/bin/readlink /etc/aliases)
-        if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
-          rm -f /etc/aliases
-          ln -s /opt/zextras/common/conf/aliases /etc/aliases
-        fi
+      SMPATH=$(readlink /etc/aliases)
+      if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
+        rm -f /etc/aliases
+        ln -s /opt/zextras/common/conf/aliases /etc/aliases
       fi
     else
       ln -s /opt/zextras/common/conf/aliases /etc/aliases
@@ -298,12 +372,10 @@ postinst__rocky_9() {
 
   if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
     if [ -L /etc/aliases ]; then
-      if [ -x /bin/readlink ]; then
-        SMPATH=$(/bin/readlink /etc/aliases)
-        if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
-          rm -f /etc/aliases
-          ln -s /opt/zextras/common/conf/aliases /etc/aliases
-        fi
+      SMPATH=$(readlink /etc/aliases)
+      if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
+        rm -f /etc/aliases
+        ln -s /opt/zextras/common/conf/aliases /etc/aliases
       fi
     else
       ln -s /opt/zextras/common/conf/aliases /etc/aliases
@@ -339,6 +411,13 @@ prerm__apt() {
   if [ -d /run/systemd/system ]; then
     systemctl --no-reload disable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
     systemctl stop carbonio-mta-sidecar.service >/dev/null 2>&1 || :
+  fi
+}
+
+prerm__ubuntu_noble() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable --now carbonio-mta.target >/dev/null 2>&1 || :
+    systemctl --no-reload disable --now carbonio-mta-sidecar.service >/dev/null 2>&1 || :
   fi
 }
 
