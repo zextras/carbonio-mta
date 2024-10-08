@@ -49,12 +49,27 @@ conflicts=(
   "mail-transport-agent"
 )
 
+source=(
+  "carbonio-mta-setup.sh"
+  "carbonio-mta-sidecar.service"
+  "carbonio-mta.hcl"
+  "carbonio-mta.sh"
+  "carbonio-mta.target"
+  "intentions.json"
+  "policies.json"
+  "postfix_main.cf"
+  "postfix_master.cf"
+  "postfix_master.cf.in"
+  "postfix_tag_as_foreign.re.in"
+  "postfix_tag_as_originating.re.in"
+  "service-protocol.json"
+)
+
 package() {
-  # /tmp/mta/src
-  cd "${srcdir}/.."
+  cd "${srcdir}"
 
   # consul for mta
-  install -Dm 755 "${pkgname}" \
+  install -Dm 755 "${pkgname}.sh" \
     "${pkgdir}/usr/bin/${pkgname}"
   install -Dm 644 "${pkgname}-sidecar.service" \
     "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
@@ -70,15 +85,14 @@ package() {
     "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
 
   # postfix
-  install -D conf/postfix/master.cf.in \
+  install -D postfix_master.cf.in \
     "${pkgdir}/opt/zextras/common/conf/master.cf.in"
-  install -D conf/postfix/tag_as_foreign.re.in \
+  install -D postfix_tag_as_foreign.re.in \
     "${pkgdir}/opt/zextras/common/conf/tag_as_foreign.re.in"
-  install -D conf/postfix/tag_as_originating.re.in \
+  install -D postfix_tag_as_originating.re.in \
     "${pkgdir}/opt/zextras/common/conf/tag_as_originating.re.in"
 
   mkdir -p "${pkgdir}/opt/zextras/data/altermime/"
-
   mkdir -p "${pkgdir}/opt/zextras/data/cbpolicyd/"
   mkdir -p "${pkgdir}/opt/zextras/data/cbpolicyd/db/"
   mkdir -p "${pkgdir}/opt/zextras/data/clamav/"
@@ -441,3 +455,19 @@ postrm() {
     systemctl daemon-reload >/dev/null 2>&1 || :
   fi
 }
+
+sha256sums=(
+  'de81be5f1bb32a01b6e7ec31686ea49935adc5120500729318e66f84639dead7'
+  '94686291669dc2b24a1e6b273cd1b3ee29b804ee7cd959baa91110c550cb7817'
+  'f45c5c1150c2fe1b5bbb8936e746c9073659e2491eec96891b667c48d27e2779'
+  '7fa8be2620f890a41f9939e72c6f9b45df5a5145f319e3c08b1cd23399e1276c'
+  '1161159ded8abd8bdca48f27276500923c46c4eb145ed96a7c5a2375630d1508'
+  '87e996a4e37d29d0f575e987faf5166d33a2f4970041b6c880702a41566d3315'
+  '240157c8b9bbd1686abd45f5936ccbaf4a63aeab2414b551a6ff6b70de9b4524'
+  '32ee447002ce23984c08d5ba4491e1670d20abf5102be1107177fd3652463e8d'
+  '361a0d1c507f6e5e3a259b7886f037f9567c17d21bea101f8b4e3d0fd67c8f70'
+  '8bb821e6639bfc5c034761ebc2e8ba9d7f9009c7678077d3ebdc79d3c4190759'
+  '859386aa88ca443617c5c7b575333513e81555ad3ae6c2bd8ed61e577370fbd1'
+  '4c86497fd1a5ec0bcca2250e10f477f5c4f4f178dc4a62173383f0b4e53a5829'
+  '18aec2fc0c687f24f40bad9a6f64bb4f00ea513a218e6a3c5cdf3c900dff8a40'
+)
