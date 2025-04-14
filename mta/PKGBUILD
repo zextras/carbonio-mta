@@ -100,10 +100,12 @@ package() {
   mkdir -p "${pkgdir}/opt/zextras/data/postfix/"
 
   # systemd units and target
+  mkdir -p "${pkgdir}/lib/systemd/system/carbonio.target.wants"
   mkdir "${pkgdir}/lib/systemd/system/${pkgname}.target.wants"
   install -Dm 644 "${pkgname}.target" \
     "${pkgdir}/lib/systemd/system/${pkgname}.target"
-
+  ln -sf "/lib/systemd/system/${pkgname}.target" \
+    "${pkgdir}/lib/systemd/system/carbonio.target.wants/${pkgname}.target"
   ln -sf "/lib/systemd/system/carbonio-altermime-config.service" \
     "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-altermime-config.service"
   ln -sf "/lib/systemd/system/carbonio-antivirus.service" \
@@ -192,10 +194,10 @@ postinst__apt() {
   chmod g+w /opt/zextras/common/conf
 
   # mta consul
-  getent group 'carbonio-mta' >/dev/null ||
-    groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null ||
-    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  getent group 'carbonio-mta' >/dev/null \
+    || groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null \
+    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
@@ -271,10 +273,10 @@ postinst__ubuntu_noble() {
   chmod g+w /opt/zextras/common/conf
 
   # mta consul
-  getent group 'carbonio-mta' >/dev/null ||
-    groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null ||
-    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  getent group 'carbonio-mta' >/dev/null \
+    || groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null \
+    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
@@ -338,10 +340,10 @@ postinst__rocky_8() {
   chmod g+w /opt/zextras/common/conf
 
   # mta consul
-  getent group 'carbonio-mta' >/dev/null ||
-    groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null ||
-    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  getent group 'carbonio-mta' >/dev/null \
+    || groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null \
+    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
@@ -404,10 +406,10 @@ postinst__rocky_9() {
   chmod g+w /opt/zextras/common/conf
 
   # mta consul
-  getent group 'carbonio-mta' >/dev/null ||
-    groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null ||
-    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  getent group 'carbonio-mta' >/dev/null \
+    || groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null \
+    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
