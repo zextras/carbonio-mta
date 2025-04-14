@@ -72,7 +72,7 @@ package() {
   install -Dm 755 "${pkgname}.sh" \
     "${pkgdir}/usr/bin/${pkgname}"
   install -Dm 644 "${pkgname}-sidecar.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}-sidecar.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
   install -Dm 644 "${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
   install -Dm 644 "${pkgname}-setup.sh" \
@@ -100,38 +100,39 @@ package() {
   mkdir -p "${pkgdir}/opt/zextras/data/postfix/"
 
   # systemd units and target
-  mkdir "${pkgdir}/lib/systemd/system/${pkgname}.target.wants"
+  mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
+  mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
   install -Dm 644 "${pkgname}.target" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target"
-
-  ln -sf "/lib/systemd/system/carbonio-altermime-config.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-altermime-config.service"
-  ln -sf "/lib/systemd/system/carbonio-antivirus.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-antivirus.service"
-  ln -sf "/lib/systemd/system/carbonio-configd.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-configd.service"
-  ln -sf "/lib/systemd/system/carbonio-freshclam.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-freshclam.service"
-  ln -sf "/lib/systemd/system/carbonio-mailthreat.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat.service"
-  ln -sf "/lib/systemd/system/carbonio-milter.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-milter.service"
-  ln -sf "/lib/systemd/system/carbonio-opendkim.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-opendkim.service"
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
+  ln -sf "/usr/lib/systemd/system/${pkgname}.target" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants/${pkgname}.target"
+  ln -sf "/usr/lib/systemd/system/carbonio-altermime-config.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-altermime-config.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-antivirus.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-antivirus.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-configd.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-configd.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-freshclam.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-freshclam.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-mailthreat.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-milter.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-milter.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-opendkim.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-opendkim.service"
   # cbpolicyd: disabled by default
-  # ln -sf "/lib/systemd/system/carbonio-policyd.service" \
-  #   "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-policyd.service"
-  ln -sf "/lib/systemd/system/carbonio-postfix.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-postfix.service"
-  ln -sf "/lib/systemd/system/carbonio-saslauthd.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-saslauthd.service"
-  ln -sf "/lib/systemd/system/carbonio-stats.service" \
-    "${pkgdir}/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
+  # ln -sf "/usr/lib/systemd/system/carbonio-policyd.service" \
+  #   "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-policyd.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-postfix.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-postfix.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-saslauthd.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-saslauthd.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-stats.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
 }
 
 postinst__apt() {
   #Symlinks
-
   if [ ! -e "/usr/sbin/sendmail" ] || [ -L "/usr/bin/sendmail" ]; then
     if [ -L "/usr/bin/sendmail" ]; then
       SMPATH=$(readlink /usr/sbin/sendmail)
@@ -192,15 +193,13 @@ postinst__apt() {
   chmod g+w /opt/zextras/common/conf
 
   # mta consul
-  getent group 'carbonio-mta' >/dev/null ||
-    groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null ||
-    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  getent group 'carbonio-mta' >/dev/null \
+    || groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null \
+    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
 
   echo "======================================================"
   echo "Carbonio mta installed successfully!"
@@ -271,16 +270,14 @@ postinst__ubuntu_noble() {
   chmod g+w /opt/zextras/common/conf
 
   # mta consul
-  getent group 'carbonio-mta' >/dev/null ||
-    groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null ||
-    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  getent group 'carbonio-mta' >/dev/null \
+    || groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null \
+    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-mta.target >/dev/null 2>&1 || :
-    systemctl enable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-mta.target &>/dev/null || :
+  systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
 
   echo "======================================================"
   echo "Carbonio mta installed successfully!"
@@ -289,7 +286,6 @@ postinst__ubuntu_noble() {
 }
 
 postinst__rocky_8() {
-
   chown zextras:zextras /opt/zextras/common/conf/master.cf.in
   chmod 440 /opt/zextras/common/conf/master.cf.in
   chown zextras:zextras /opt/zextras/common/conf/tag_as_*.re.in
@@ -338,15 +334,13 @@ postinst__rocky_8() {
   chmod g+w /opt/zextras/common/conf
 
   # mta consul
-  getent group 'carbonio-mta' >/dev/null ||
-    groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null ||
-    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  getent group 'carbonio-mta' >/dev/null \
+    || groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null \
+    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
 
   echo "======================================================"
   echo "Carbonio mta installed successfully!"
@@ -404,16 +398,14 @@ postinst__rocky_9() {
   chmod g+w /opt/zextras/common/conf
 
   # mta consul
-  getent group 'carbonio-mta' >/dev/null ||
-    groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null ||
-    useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  getent group 'carbonio-mta' >/dev/null \
+    || groupadd -r 'carbonio-mta'
+  getent passwd 'carbonio-mta' >/dev/null \
+    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-    systemctl enable carbonio-mta.target >/dev/null 2>&1 || :
-    systemctl enable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
+  systemctl enable carbonio-mta.target &>/dev/null || :
+  systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
 
   echo "======================================================"
   echo "Carbonio mta installed successfully!"
@@ -422,38 +414,28 @@ postinst__rocky_9() {
 }
 
 prerm__apt() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-    systemctl stop carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl --no-reload disable carbonio-mta-sidecar.service &>/dev/null || :
+  systemctl stop carbonio-mta-sidecar.service &>/dev/null || :
 }
 
 prerm__ubuntu_noble() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-mta.target >/dev/null 2>&1 || :
-    systemctl --no-reload disable --now carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl --no-reload disable --now carbonio-mta.target &>/dev/null || :
+  systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
 }
 
 prerm__rocky_8() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-    systemctl stop carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl --no-reload disable carbonio-mta-sidecar.service &>/dev/null || :
+  systemctl stop carbonio-mta-sidecar.service &>/dev/null || :
 }
 
 prerm__rocky_9() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-mta.target >/dev/null 2>&1 || :
-    systemctl --no-reload disable --now carbonio-mta-sidecar.service >/dev/null 2>&1 || :
-  fi
+  systemctl --no-reload disable --now carbonio-mta.target &>/dev/null || :
+  systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
 }
 
 postrm() {
   rm -f /etc/carbonio/mta/service-discover/token
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload >/dev/null 2>&1 || :
-  fi
+  systemctl daemon-reload &>/dev/null || :
 }
 
 sha256sums=(
@@ -461,7 +443,7 @@ sha256sums=(
   '94686291669dc2b24a1e6b273cd1b3ee29b804ee7cd959baa91110c550cb7817'
   'f45c5c1150c2fe1b5bbb8936e746c9073659e2491eec96891b667c48d27e2779'
   '7fa8be2620f890a41f9939e72c6f9b45df5a5145f319e3c08b1cd23399e1276c'
-  '1161159ded8abd8bdca48f27276500923c46c4eb145ed96a7c5a2375630d1508'
+  '4599ec6711a850b73ee453c187f3629e3a7b31b460e9bec109496db8832bea2f'
   '87e996a4e37d29d0f575e987faf5166d33a2f4970041b6c880702a41566d3315'
   '240157c8b9bbd1686abd45f5936ccbaf4a63aeab2414b551a6ff6b70de9b4524'
   '32ee447002ce23984c08d5ba4491e1670d20abf5102be1107177fd3652463e8d'
