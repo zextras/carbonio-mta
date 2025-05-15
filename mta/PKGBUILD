@@ -435,16 +435,19 @@ prerm__ubuntu_noble() {
 }
 
 prerm__rocky_8() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-mta-sidecar.service &>/dev/null || :
-    systemctl stop carbonio-mta-sidecar.service &>/dev/null || :
+  if [ $1 -eq 0 ]; then
+    if [ -d /run/systemd/system ]; then
+      systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
+    fi
   fi
 }
 
 prerm__rocky_9() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-mta.target &>/dev/null || :
-    systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
+  if [ $1 -eq 0 ]; then
+    if [ -d /run/systemd/system ]; then
+      systemctl --no-reload disable --now carbonio-mta.target &>/dev/null || :
+      systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
+    fi
   fi
 }
 
@@ -452,6 +455,30 @@ postrm() {
   rm -f /etc/carbonio/mta/service-discover/token
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
+  fi
+}
+
+postrm__yum() {
+  if [ $1 -eq 0 ]; then
+    rm -f /etc/carbonio/mta/service-discover/token
+    if [ -d /run/systemd/system ]; then
+      systemctl daemon-reload &>/dev/null || :
+    fi
+  fi
+}
+
+posttrans__rocky_8() {
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload &>/dev/null || :
+    systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
+  fi
+}
+
+posttrans__rocky_9() {
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload &>/dev/null || :
+    systemctl enable carbonio-mta.target &>/dev/null || :
+    systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
   fi
 }
 
