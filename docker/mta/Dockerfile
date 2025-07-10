@@ -5,6 +5,7 @@ USER root
 ENV LDAP_ROOT_PASSWORD=qh6hWZvc
 ENV LDAP_HOST=openldap
 ENV LDAP_PORT=1389
+EXPOSE 25
 
 RUN apt update && apt install -y gnupg2 ca-certificates && apt clean && \
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 52FD40243E584A21 && \
