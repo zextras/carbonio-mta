@@ -39,12 +39,14 @@ pipeline {
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build ubuntu-focal . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build ubuntu-focal . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build ubuntu-focal . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build ubuntu-focal . -s'
+                                        }
                                     }
                                 }
                                 stash includes: 'artifacts/*focal*.deb', name: 'artifacts-ubuntu-focal'
@@ -63,12 +65,14 @@ pipeline {
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build ubuntu-jammy . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build ubuntu-jammy . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build ubuntu-jammy . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build ubuntu-jammy . -s'
+                                        }
                                     }
                                 }
                                 stash includes: 'artifacts/*jammy*.deb', name: 'artifacts-ubuntu-jammy'
@@ -87,12 +91,14 @@ pipeline {
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build ubuntu-noble . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build ubuntu-noble . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build ubuntu-noble . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build ubuntu-noble . -s'
+                                        }
                                     }
                                 }
                                 stash includes: 'artifacts/*noble*.deb', name: 'artifacts-ubuntu-noble'
@@ -112,12 +118,15 @@ pipeline {
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build rocky-8 . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build rocky-8 . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build rocky-8 . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build rocky-8 . -s'
+                                        }
+
                                     }
                                 }
                                 stash includes: 'artifacts/*el8*.rpm', name: 'artifacts-rhel8'
@@ -137,12 +146,14 @@ pipeline {
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build rocky-9 . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build rocky-9 . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build rocky-9 . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build rocky-9 . -s'
+                                        }
                                     }
                                 }
                                 stash includes: 'artifacts/*el9*.rpm', name: 'artifacts-rhel9'
