@@ -1,6 +1,6 @@
 pkgname="carbonio-mta"
 pkgver="4.2.1"
-pkgrel="0"
+pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 maintainer="Zextras <packages@zextras.com>"
 copyright=(
