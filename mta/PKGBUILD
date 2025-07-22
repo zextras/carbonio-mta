@@ -116,6 +116,10 @@ package() {
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-freshclam.service"
   ln -sf "/usr/lib/systemd/system/carbonio-mailthreat.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-mailthreat-update.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat-update.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-mailthreat-update.timer" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat-update.timer"
   ln -sf "/usr/lib/systemd/system/carbonio-milter.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-milter.service"
   ln -sf "/usr/lib/systemd/system/carbonio-opendkim.service" \
