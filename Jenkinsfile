@@ -20,11 +20,10 @@ pipeline {
     }
     agent {
         node {
-            label 'base'
+            label 'zextras-v1'
         }
     }
     environment {
-        NETWORK_OPTS = '--network ci_agent'
         ARTIFACTORY_ACCESS=credentials('artifactory-jenkins-gradle-properties-splitted')
     }
     stages {

@@ -57,8 +57,6 @@ source=(
   "carbonio-mta.target"
   "intentions.json"
   "policies.json"
-  "postfix_main.cf"
-  "postfix_master.cf"
   "postfix_master.cf.in"
   "postfix_tag_as_foreign.re.in"
   "postfix_tag_as_originating.re.in"
@@ -132,6 +130,10 @@ package() {
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-freshclam.service"
   ln -sf "/usr/lib/systemd/system/carbonio-mailthreat.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-mailthreat-update.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat-update.service"
+  ln -sf "/usr/lib/systemd/system/carbonio-mailthreat-update.timer" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat-update.timer"
   ln -sf "/usr/lib/systemd/system/carbonio-milter.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-milter.service"
   ln -sf "/usr/lib/systemd/system/carbonio-opendkim.service" \
@@ -184,8 +186,7 @@ postinst__apt() {
 
   chown zextras:zextras /opt/zextras/data
 
-  if [ ! -f /opt/zextras/common/conf/main.cf ]; then
-    touch /opt/zextras/common/conf/main.cf
+  if [ -f /opt/zextras/common/conf/main.cf ]; then
     chown zextras:zextras /opt/zextras/common/conf/main.cf
   fi
 
@@ -263,8 +264,7 @@ postinst__ubuntu_noble() {
 
   chown zextras:zextras /opt/zextras/data
 
-  if [ ! -f /opt/zextras/common/conf/main.cf ]; then
-    touch /opt/zextras/common/conf/main.cf
+  if [ -f /opt/zextras/common/conf/main.cf ]; then
     chown zextras:zextras /opt/zextras/common/conf/main.cf
   fi
 
@@ -329,8 +329,7 @@ postinst__rocky_8() {
 
   chown zextras:zextras /opt/zextras/data
 
-  if [ ! -f /opt/zextras/common/conf/main.cf ]; then
-    touch /opt/zextras/common/conf/main.cf
+  if [ -f /opt/zextras/common/conf/main.cf ]; then
     chown zextras:zextras /opt/zextras/common/conf/main.cf
   fi
 
@@ -394,8 +393,7 @@ postinst__rocky_9() {
 
   chown zextras:zextras /opt/zextras/data
 
-  if [ ! -f /opt/zextras/common/conf/main.cf ]; then
-    touch /opt/zextras/common/conf/main.cf
+  if [ -f /opt/zextras/common/conf/main.cf ]; then
     chown zextras:zextras /opt/zextras/common/conf/main.cf
   fi
 
