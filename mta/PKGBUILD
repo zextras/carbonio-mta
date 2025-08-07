@@ -467,4 +467,3 @@ postrm() {
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
   fi
-}
