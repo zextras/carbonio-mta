@@ -3,6 +3,7 @@ Description=Carbonio MTA sidecar proxy
 Documentation=https://docs.zextras.com/
 Requires=network-online.target
 After=network-online.target
+PartOf=carbonio-mta.target
 
 [Service]
 User=carbonio-mta
@@ -17,4 +18,4 @@ KillSignal=SIGINT
 LimitNOFILE=65536
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=carbonio-mta.target
