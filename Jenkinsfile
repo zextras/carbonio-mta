@@ -1,3 +1,12 @@
+def buildContainer(String title, String description, String dockerfile, String tag) {
+    sh 'docker build ' +
+            '--label org.opencontainers.image.title="' + title + '" ' +
+            '--label org.opencontainers.image.description="' + description + '" ' +
+            '--label org.opencontainers.image.vendor="Zextras" ' +
+            '-f ' + dockerfile + ' -t ' + tag + ' .'
+    sh 'docker push ' + tag
+}
+
 pipeline {
     parameters {
         booleanParam defaultValue: false,
@@ -11,11 +20,10 @@ pipeline {
     }
     agent {
         node {
-            label 'base-agent-v2'
+            label 'zextras-v1'
         }
     }
     environment {
-        NETWORK_OPTS = '--network ci_agent'
         ARTIFACTORY_ACCESS=credentials('artifactory-jenkins-gradle-properties-splitted')
     }
     stages {
@@ -28,23 +36,38 @@ pipeline {
                 stash includes: '**', name: 'staging'
             }
         }
+        stage('Publish containers - devel') {
+            when {
+                branch 'devel';
+            }
+            steps {
+                container('dind') {
+                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
+                        buildContainer('Carbonio MTA', '$(cat docker/mta/description.md)',
+                                'docker/mta/Dockerfile', 'registry.dev.zextras.com/dev/carbonio-mta:latest')
+                    }
+                }
+            }
+        }
 
         stage('Build deb/rpm') {
             parallel {
                         stage('Ubuntu 20') {
                             agent {
                                 node {
-                                    label 'yap-agent-ubuntu-20.04-v2'
+                                    label 'yap-ubuntu-20-v1'
                                 }
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build ubuntu-focal . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build ubuntu-focal . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build ubuntu-focal . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build ubuntu-focal . -s'
+                                        }
                                     }
                                 }
                                 stash includes: 'artifacts/*focal*.deb', name: 'artifacts-ubuntu-focal'
@@ -58,17 +81,19 @@ pipeline {
                         stage('Ubuntu 22') {
                             agent {
                                 node {
-                                    label 'yap-agent-ubuntu-22.04-v2'
+                                    label 'yap-ubuntu-22-v1'
                                 }
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build ubuntu-jammy . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build ubuntu-jammy . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build ubuntu-jammy . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build ubuntu-jammy . -s'
+                                        }
                                     }
                                 }
                                 stash includes: 'artifacts/*jammy*.deb', name: 'artifacts-ubuntu-jammy'
@@ -82,17 +107,19 @@ pipeline {
                         stage('Ubuntu 24') {
                             agent {
                                 node {
-                                    label 'yap-agent-ubuntu-24.04-v2'
+                                    label 'yap-ubuntu-24-v1'
                                 }
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build ubuntu-noble . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build ubuntu-noble . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build ubuntu-noble . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build ubuntu-noble . -s'
+                                        }
                                     }
                                 }
                                 stash includes: 'artifacts/*noble*.deb', name: 'artifacts-ubuntu-noble'
@@ -107,24 +134,27 @@ pipeline {
                         stage('RHEL8') {
                             agent {
                                 node {
-                                    label 'yap-agent-rocky-8-v2'
+                                    label 'yap-rocky-8-v1'
                                 }
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build rocky-8 . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build rocky-8 . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build rocky-8 . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build rocky-8 . -s'
+                                        }
+
                                     }
                                 }
-                                stash includes: 'artifacts/x86_64/*el8*.rpm', name: 'artifacts-rhel8'
+                                stash includes: 'artifacts/*el8*.rpm', name: 'artifacts-rhel8'
                             }
                             post {
                                 always {
-                                    archiveArtifacts artifacts: "artifacts/x86_64/*el8*.rpm", fingerprint: true
+                                    archiveArtifacts artifacts: "artifacts/*el8*.rpm", fingerprint: true
                                 }
                             }
                         }
@@ -132,24 +162,26 @@ pipeline {
                         stage('RHEL9') {
                             agent {
                                 node {
-                                    label 'yap-agent-rocky-9-v2'
+                                    label 'yap-rocky-9-v1'
                                 }
                             }
                             steps {
                                 unstash 'staging'
-                                script {
-                                    if (BRANCH_NAME == 'devel') {
-                                        def timestamp = new Date().format('yyyyMMddHHmmss')
-                                        sh "yap build rocky-9 . -r ${timestamp} -s"
-                                    } else {
-                                        sh 'yap build rocky-9 . -s'
+                                container('yap') {
+                                    script {
+                                        if (BRANCH_NAME == 'devel') {
+                                            def timestamp = new Date().format('yyyyMMddHHmmss')
+                                            sh "yap build rocky-9 . -r ${timestamp} -s"
+                                        } else {
+                                            sh 'yap build rocky-9 . -s'
+                                        }
                                     }
                                 }
-                                stash includes: 'artifacts/x86_64/*el9*.rpm', name: 'artifacts-rhel9'
+                                stash includes: 'artifacts/*el9*.rpm', name: 'artifacts-rhel9'
                             }
                             post {
                                 always {
-                                    archiveArtifacts artifacts: "artifacts/x86_64/*el9*.rpm", fingerprint: true
+                                    archiveArtifacts artifacts: "artifacts/*el9*.rpm", fingerprint: true
                                 }
                             }
                         }
@@ -194,12 +226,12 @@ pipeline {
                                 "props": "deb.distribution=noble;deb.component=main;deb.architecture=amd64;vcs.revision=${env.GIT_COMMIT}"
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-mta)-(*).el8.x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-mta)-(*).el8.x86_64.rpm",
                                 "target": "centos8-playground/zextras/{1}/{1}-{2}.el8.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras;vcs.revision=${env.GIT_COMMIT}"
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-mta)-(*).el9.x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-mta)-(*).el9.x86_64.rpm",
                                 "target": "rhel9-playground/zextras/{1}/{1}-{2}.el9.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras;vcs.revision=${env.GIT_COMMIT}"
                             }
@@ -244,12 +276,12 @@ pipeline {
                                 "props": "deb.distribution=noble;deb.component=main;deb.architecture=amd64;vcs.revision=${env.GIT_COMMIT}"
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-mta)-(*).el8.x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-mta)-(*).el8.x86_64.rpm",
                                 "target": "centos8-devel/zextras/{1}/{1}-{2}.el8.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras;vcs.revision=${env.GIT_COMMIT}"
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-mta)-(*).el9.x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-mta)-(*).el9.x86_64.rpm",
                                 "target": "rhel9-devel/zextras/{1}/{1}-{2}.el9.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras;vcs.revision=${env.GIT_COMMIT}"
                             }
@@ -319,7 +351,7 @@ pipeline {
                     uploadSpec= """{
                         "files": [
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-mta)-(*).el8.x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-mta)-(*).el8.x86_64.rpm",
                                 "target": "centos8-rc/zextras/{1}/{1}-{2}.el8.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras;vcs.revision=${env.GIT_COMMIT}"
                             }
