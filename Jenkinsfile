@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.0',
+    identifier: 'jenkins-packages-build-library@1.0.1',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
@@ -57,11 +57,13 @@ pipeline {
                     withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
                         script {
                             dockerHelper.buildImage([
-                                title: 'Carbonio MTA', 
-                                descriptionFile: 'docker/mta/description.md',
                                 dockerfile: 'docker/mta/Dockerfile', 
                                 imageName: 'registry.dev.zextras.com/dev/carbonio-mta',
-                                imageTags: 'latest'
+                                imageTags: 'latest',
+                                ocLabels: [
+                                    title: 'Carbonio MTA', 
+                                    descriptionFile: 'docker/mta/description.md',
+                                ]
                             ])
                         }
                     }
