@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.1',
+    identifier: 'jenkins-packages-build-library@1.0.4',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
@@ -8,7 +8,6 @@ library(
 )
 
 pipeline {
-    
     agent {
         node {
             label 'zextras-v1'
@@ -21,7 +20,6 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
-        parallelsAlwaysFailFast()
         skipDefaultCheckout()
         timeout(time: 3, unit: 'HOURS')
     }
@@ -37,7 +35,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -47,7 +44,7 @@ pipeline {
                 stash includes: '**', name: 'staging'
             }
         }
-        
+
         stage('Publish containers - devel') {
             when {
                 branch 'devel';
@@ -57,11 +54,11 @@ pipeline {
                     withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
                         script {
                             dockerHelper.buildImage([
-                                dockerfile: 'docker/mta/Dockerfile', 
+                                dockerfile: 'docker/mta/Dockerfile',
                                 imageName: 'registry.dev.zextras.com/dev/carbonio-mta',
                                 imageTags: 'latest',
                                 ocLabels: [
-                                    title: 'Carbonio MTA', 
+                                    title: 'Carbonio MTA',
                                     descriptionFile: 'docker/mta/description.md',
                                 ]
                             ])
@@ -73,8 +70,10 @@ pipeline {
 
         stage('Build deb/rpm') {
             steps {
-                echo "Building deb/rpm packages"
-                buildStage()
+                echo 'Building deb/rpm packages'
+                buildStage([
+                    buildFlags: ' -s '
+                ])
             }
         }
 
