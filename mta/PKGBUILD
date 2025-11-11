@@ -50,7 +50,7 @@ conflicts=(
 )
 
 source=(
-  "carbonio-mta-setup.sh"
+  "211-carbonio-mta.sh"
   "carbonio-mta-sidecar.service"
   "carbonio-mta.hcl"
   "carbonio-mta.sh"
@@ -87,8 +87,8 @@ package() {
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
   install -Dm 644 "${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
-  install -Dm 644 "${pkgname}-setup.sh" \
-    "${pkgdir}/etc/zextras/pending-setups.d/${pkgname}.sh"
+  install -Dm 644 "211-${pkgname}.sh" \
+    "${pkgdir}/etc/zextras/pending-setups.d/211-${pkgname}.sh"
   install -Dm 644 policies.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/policies.json"
   install -Dm 644 intentions.json \
