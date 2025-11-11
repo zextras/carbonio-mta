@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.4',
+    identifier: 'jenkins-packages-build-library@1.0.5',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 checkout scm
                 script {
-                    gitMetadata() 
+                    gitMetadata()
                 }
                 stash includes: '**', name: 'staging'
             }
@@ -56,7 +56,7 @@ pipeline {
                             dockerHelper.buildImage([
                                 dockerfile: 'docker/mta/Dockerfile',
                                 imageName: 'registry.dev.zextras.com/dev/carbonio-mta',
-                                imageTags: 'latest',
+                                imageTags: ['latest'],
                                 ocLabels: [
                                     title: 'Carbonio MTA',
                                     descriptionFile: 'docker/mta/description.md',
