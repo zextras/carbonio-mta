@@ -111,7 +111,7 @@ bsmtp     unix  -       n       n       -       -       pipe
 smtp-amavis unix -      -       n       -       %%zimbraAmavisMaxServers%%  smtp
 	-o smtp_data_done_timeout=1200
 	-o smtp_send_xforward_command=yes
-	-o disable_dns_lookups=yes
+	-o smtp_dns_support_level=disabled
 	-o smtpd_sasl_auth_enable=no
 	-o max_use=20
 [%%zimbraLocalBindAddress%%]:10025 inet n  -       n       -       -  smtpd

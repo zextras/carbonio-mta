@@ -1,9 +1,9 @@
 {
   "name": "An open-source, community-driven email server",
-  "Description": "MTA",
+  "description": "MTA",
   "buildDir": "/tmp/",
   "output": "artifacts",
-  "Projects": [
+  "projects": [
     {
       "name": "mta"
     }
