@@ -1,9 +1,9 @@
 library(
-    identifier: 'jenkins-packages-build-library@1.0.5',
+    identifier: 'jenkins-lib-common@1.1.2',
     retriever: modernSCM([
         $class: 'GitSCMSource',
-        remote: 'git@github.com:zextras/jenkins-packages-build-library.git',
-        credentialsId: 'jenkins-integration-with-github-account'
+        credentialsId: 'jenkins-integration-with-github-account',
+        remote: 'git@github.com:zextras/jenkins-lib-common.git',
     ])
 )
 
@@ -24,47 +24,30 @@ pipeline {
         timeout(time: 3, unit: 'HOURS')
     }
 
-    parameters {
-        booleanParam defaultValue: false,
-            description: 'Whether to upload the packages in playground repositories',
-            name: 'PLAYGROUND'
-    }
 
-    tools {
-        jfrog 'jfrog-cli'
-    }
 
     stages {
-        stage('Checkout') {
+        stage('Setup') {
             steps {
                 checkout scm
                 script {
                     gitMetadata()
+                    properties(defaultPipelineProperties())
                 }
                 stash includes: '**', name: 'staging'
             }
         }
 
-        stage('Publish containers - devel') {
-            when {
-                branch 'devel';
-            }
+        stage('Publish docker images') {
             steps {
-                container('dind') {
-                    withDockerRegistry(credentialsId: 'private-registry', url: 'https://registry.dev.zextras.com') {
-                        script {
-                            dockerHelper.buildImage([
-                                dockerfile: 'docker/mta/Dockerfile',
-                                imageName: 'registry.dev.zextras.com/dev/carbonio-mta',
-                                imageTags: ['latest'],
-                                ocLabels: [
-                                    title: 'Carbonio MTA',
-                                    descriptionFile: 'docker/mta/description.md',
-                                ]
-                            ])
-                        }
-                    }
-                }
+                dockerStage([
+                    dockerfile: 'docker/mta/Dockerfile',
+                    imageName: 'carbonio-mta',
+                    ocLabels: [
+                        title: 'Carbonio MTA',
+                        descriptionFile: 'docker/mta/description.md',
+                    ]
+                ])
             }
         }
 
@@ -77,11 +60,13 @@ pipeline {
             }
         }
 
-        stage('Upload artifacts')
-        {
+        stage('Upload artifacts') {
+            tools {
+                jfrog 'jfrog-cli'
+            }
             steps {
-               uploadStage(
-                    packages: yapHelper.getPackageNames()
+                uploadStage(
+                    packages: yapHelper.resolvePackageNames()
                 )
             }
         }
