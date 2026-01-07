@@ -78,7 +78,7 @@ sha256sums=(
   '4c86497fd1a5ec0bcca2250e10f477f5c4f4f178dc4a62173383f0b4e53a5829'
   '18aec2fc0c687f24f40bad9a6f64bb4f00ea513a218e6a3c5cdf3c900dff8a40'
   'fa791f5e10ce0e913255bd9b2ab2c0638c14c9377fe1be38c993f20f12131090'
-  '2afb7cb0c8524f1f5f787714ea5b015c503f5b2ffe14ede6c837db50dd6b6de4'
+  '8c3adbe25f2aea408df3e437dc5e79b8248c8fa5fca47d8e52617e02d1f9cccf'
 )
 
 package() {
@@ -212,7 +212,7 @@ postinst__apt() {
   fi
 
   systemd-sysusers
-  systemd-tmpfiles --create
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -280,7 +280,7 @@ postinst__ubuntu_noble() {
   fi
 
   systemd-sysusers
-  systemd-tmpfiles --create
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -335,7 +335,7 @@ postinst__rocky_8() {
   fi
 
   systemd-sysusers
-  systemd-tmpfiles --create
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -389,7 +389,7 @@ postinst__rocky_9() {
   fi
 
   systemd-sysusers
-  systemd-tmpfiles --create
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
