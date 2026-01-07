@@ -61,6 +61,8 @@ source=(
   "postfix_tag_as_foreign.re.in"
   "postfix_tag_as_originating.re.in"
   "service-protocol.json"
+  "systemd-sysuser.conf"
+  "systemd-tmpfile.conf"
 )
 
 sha256sums=(
@@ -75,25 +77,27 @@ sha256sums=(
   '859386aa88ca443617c5c7b575333513e81555ad3ae6c2bd8ed61e577370fbd1'
   '4c86497fd1a5ec0bcca2250e10f477f5c4f4f178dc4a62173383f0b4e53a5829'
   '18aec2fc0c687f24f40bad9a6f64bb4f00ea513a218e6a3c5cdf3c900dff8a40'
+  'fa791f5e10ce0e913255bd9b2ab2c0638c14c9377fe1be38c993f20f12131090'
+  '2afb7cb0c8524f1f5f787714ea5b015c503f5b2ffe14ede6c837db50dd6b6de4'
 )
 
 package() {
   cd "${srcdir}"
 
   # consul for mta
-  install -Dm 755 "${pkgname}.sh" \
+  install -Dm755 "${pkgname}.sh" \
     "${pkgdir}/usr/bin/${pkgname}"
-  install -Dm 644 "${pkgname}-sidecar.service" \
+  install -Dm644 "${pkgname}-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
-  install -Dm 644 "${pkgname}.hcl" \
+  install -Dm644 "${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
-  install -Dm 644 "211-${pkgname}.sh" \
+  install -Dm644 "211-${pkgname}.sh" \
     "${pkgdir}/etc/zextras/pending-setups.d/211-${pkgname}.sh"
-  install -Dm 644 policies.json \
+  install -Dm644 policies.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/policies.json"
-  install -Dm 644 intentions.json \
+  install -Dm644 intentions.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/intentions.json"
-  install -Dm 644 service-protocol.json \
+  install -Dm644 service-protocol.json \
     "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
 
   # postfix
@@ -111,10 +115,17 @@ package() {
   mkdir -p "${pkgdir}/opt/zextras/data/opendkim/"
   mkdir -p "${pkgdir}/opt/zextras/data/postfix/"
 
+  # systemd sysusers.d
+  install -Dm644 "${srcdir}/systemd-sysuser.conf" \
+    "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+  # systemd tmpfiles.d
+  install -Dm644 "${srcdir}/systemd-tmpfile.conf" \
+    "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+
   # systemd units and target
   mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
   mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
-  install -Dm 644 "${pkgname}.target" \
+  install -Dm644 "${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
   ln -sf "/usr/lib/systemd/system/${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants/${pkgname}.target"
@@ -200,18 +211,8 @@ postinst__apt() {
     fi
   fi
 
-  if [ -x "/opt/zextras/libexec/zmfixperms" ]; then
-    /opt/zextras/libexec/zmfixperms
-  fi
-
-  chgrp zextras /opt/zextras/common/conf
-  chmod g+w /opt/zextras/common/conf
-
-  # mta consul
-  getent group 'carbonio-mta' >/dev/null \
-    || groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null \
-    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  systemd-sysusers
+  systemd-tmpfiles --create
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -278,18 +279,8 @@ postinst__ubuntu_noble() {
     fi
   fi
 
-  if [ -x "/opt/zextras/libexec/zmfixperms" ]; then
-    /opt/zextras/libexec/zmfixperms
-  fi
-
-  chgrp zextras /opt/zextras/common/conf
-  chmod g+w /opt/zextras/common/conf
-
-  # mta consul
-  getent group 'carbonio-mta' >/dev/null \
-    || groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null \
-    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  systemd-sysusers
+  systemd-tmpfiles --create
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -343,18 +334,8 @@ postinst__rocky_8() {
     fi
   fi
 
-  if [ -x "/opt/zextras/libexec/zmfixperms" ]; then
-    /opt/zextras/libexec/zmfixperms
-  fi
-
-  chgrp zextras /opt/zextras/common/conf
-  chmod g+w /opt/zextras/common/conf
-
-  # mta consul
-  getent group 'carbonio-mta' >/dev/null \
-    || groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null \
-    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  systemd-sysusers
+  systemd-tmpfiles --create
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -407,18 +388,8 @@ postinst__rocky_9() {
     fi
   fi
 
-  if [ -x "/opt/zextras/libexec/zmfixperms" ]; then
-    /opt/zextras/libexec/zmfixperms
-  fi
-
-  chgrp zextras /opt/zextras/common/conf
-  chmod g+w /opt/zextras/common/conf
-
-  # mta consul
-  getent group 'carbonio-mta' >/dev/null \
-    || groupadd -r 'carbonio-mta'
-  getent passwd 'carbonio-mta' >/dev/null \
-    || useradd -r -M -g 'carbonio-mta' -s /sbin/nologin 'carbonio-mta'
+  systemd-sysusers
+  systemd-tmpfiles --create
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
