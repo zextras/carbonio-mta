@@ -77,7 +77,7 @@ sha256sums=(
   '859386aa88ca443617c5c7b575333513e81555ad3ae6c2bd8ed61e577370fbd1'
   '4c86497fd1a5ec0bcca2250e10f477f5c4f4f178dc4a62173383f0b4e53a5829'
   '18aec2fc0c687f24f40bad9a6f64bb4f00ea513a218e6a3c5cdf3c900dff8a40'
-  'fa791f5e10ce0e913255bd9b2ab2c0638c14c9377fe1be38c993f20f12131090'
+  'df0da4463882c6c1548422c8ca543ab3c1478f5539014002d6df3674f1f62141'
   '3371b995b748618e4e0fe31482dbc4e6473220697dfe5cfe5bfea38af49ae1b3'
 )
 
@@ -172,32 +172,7 @@ postinst__apt() {
     fi
   fi
 
-  chown zextras:zextras /opt/zextras/common/conf/master.cf.in
-  chmod 440 /opt/zextras/common/conf/master.cf.in
-  chown zextras:zextras /opt/zextras/common/conf/tag_as_*.re.in
-
-  mkdir -p /opt/zextras/data/amavisd/db
-  mkdir -p /opt/zextras/data/amavisd/tmp
-  mkdir -p /opt/zextras/data/amavisd/var
-  mkdir -p /opt/zextras/data/amavisd/quarantine
-  chown -R zextras:zextras /opt/zextras/data/amavisd/*
-
-  mkdir -p /opt/zextras/data/opendkim
-  chown -R zextras:zextras /opt/zextras/data/opendkim
-
-  mkdir -p /opt/zextras/data/clamav/db
-  chown -R zextras:zextras /opt/zextras/data/clamav/db
-
-  mkdir -p /opt/zextras/data/postfix/spool/pid
-  chown postfix:zextras /opt/zextras/data/postfix
-  chown root:postfix /opt/zextras/data/postfix/spool
-  chown postfix:root /opt/zextras/data/postfix/spool/pid
-
-  chown zextras:zextras /opt/zextras/data
-
-  if [ -f /opt/zextras/common/conf/main.cf ]; then
-    chown zextras:zextras /opt/zextras/common/conf/main.cf
-  fi
+  # Note: Directory creation for amavisd, clamav, postfix handled by their respective packages' tmpfiles.d
 
   if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
     if [ -L /etc/aliases ]; then
@@ -240,32 +215,7 @@ postinst__ubuntu_noble() {
     fi
   fi
 
-  chown zextras:zextras /opt/zextras/common/conf/master.cf.in
-  chmod 440 /opt/zextras/common/conf/master.cf.in
-  chown zextras:zextras /opt/zextras/common/conf/tag_as_*.re.in
-
-  mkdir -p /opt/zextras/data/amavisd/db
-  mkdir -p /opt/zextras/data/amavisd/tmp
-  mkdir -p /opt/zextras/data/amavisd/var
-  mkdir -p /opt/zextras/data/amavisd/quarantine
-  chown -R zextras:zextras /opt/zextras/data/amavisd/*
-
-  mkdir -p /opt/zextras/data/opendkim
-  chown -R zextras:zextras /opt/zextras/data/opendkim
-
-  mkdir -p /opt/zextras/data/clamav/db
-  chown -R zextras:zextras /opt/zextras/data/clamav/db
-
-  mkdir -p /opt/zextras/data/postfix/spool/pid
-  chown postfix:zextras /opt/zextras/data/postfix
-  chown root:postfix /opt/zextras/data/postfix/spool
-  chown postfix:root /opt/zextras/data/postfix/spool/pid
-
-  chown zextras:zextras /opt/zextras/data
-
-  if [ -f /opt/zextras/common/conf/main.cf ]; then
-    chown zextras:zextras /opt/zextras/common/conf/main.cf
-  fi
+  # Note: Directory creation for amavisd, clamav, postfix handled by their respective packages' tmpfiles.d
 
   if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
     if [ -L /etc/aliases ]; then
@@ -295,32 +245,7 @@ postinst__ubuntu_noble() {
 }
 
 postinst__rocky_8() {
-  chown zextras:zextras /opt/zextras/common/conf/master.cf.in
-  chmod 440 /opt/zextras/common/conf/master.cf.in
-  chown zextras:zextras /opt/zextras/common/conf/tag_as_*.re.in
-
-  mkdir -p /opt/zextras/data/amavisd/db
-  mkdir -p /opt/zextras/data/amavisd/tmp
-  mkdir -p /opt/zextras/data/amavisd/var
-  mkdir -p /opt/zextras/data/amavisd/quarantine
-  chown -R zextras:zextras /opt/zextras/data/amavisd/*
-
-  mkdir -p /opt/zextras/data/opendkim
-  chown -R zextras:zextras /opt/zextras/data/opendkim
-
-  mkdir -p /opt/zextras/data/clamav/db
-  chown -R zextras:zextras /opt/zextras/data/clamav/db
-
-  mkdir -p /opt/zextras/data/postfix/spool/pid
-  chown postfix:zextras /opt/zextras/data/postfix
-  chown root:postfix /opt/zextras/data/postfix/spool
-  chown postfix:root /opt/zextras/data/postfix/spool/pid
-
-  chown zextras:zextras /opt/zextras/data
-
-  if [ -f /opt/zextras/common/conf/main.cf ]; then
-    chown zextras:zextras /opt/zextras/common/conf/main.cf
-  fi
+  # Note: Directory creation for amavisd, clamav, postfix handled by their respective packages' tmpfiles.d
 
   if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
     if [ -L /etc/aliases ]; then
@@ -349,32 +274,7 @@ postinst__rocky_8() {
 }
 
 postinst__rocky_9() {
-  chown zextras:zextras /opt/zextras/common/conf/master.cf.in
-  chmod 440 /opt/zextras/common/conf/master.cf.in
-  chown zextras:zextras /opt/zextras/common/conf/tag_as_*.re.in
-
-  mkdir -p /opt/zextras/data/amavisd/db
-  mkdir -p /opt/zextras/data/amavisd/tmp
-  mkdir -p /opt/zextras/data/amavisd/var
-  mkdir -p /opt/zextras/data/amavisd/quarantine
-  chown -R zextras:zextras /opt/zextras/data/amavisd/*
-
-  mkdir -p /opt/zextras/data/opendkim
-  chown -R zextras:zextras /opt/zextras/data/opendkim
-
-  mkdir -p /opt/zextras/data/clamav/db
-  chown -R zextras:zextras /opt/zextras/data/clamav/db
-
-  mkdir -p /opt/zextras/data/postfix/spool/pid
-  chown postfix:zextras /opt/zextras/data/postfix
-  chown root:postfix /opt/zextras/data/postfix/spool
-  chown postfix:root /opt/zextras/data/postfix/spool/pid
-
-  chown zextras:zextras /opt/zextras/data
-
-  if [ -f /opt/zextras/common/conf/main.cf ]; then
-    chown zextras:zextras /opt/zextras/common/conf/main.cf
-  fi
+  # Note: Directory creation for amavisd, clamav, postfix handled by their respective packages' tmpfiles.d
 
   if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
     if [ -L /etc/aliases ]; then
