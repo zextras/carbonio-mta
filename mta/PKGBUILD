@@ -211,8 +211,8 @@ postinst__apt() {
     fi
   fi
 
-  systemd-sysusers
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf
+  systemd-sysusers >/dev/null 2>&1 || :
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf >/dev/null 2>&1 || :
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -279,8 +279,8 @@ postinst__ubuntu_noble() {
     fi
   fi
 
-  systemd-sysusers
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf
+  systemd-sysusers >/dev/null 2>&1 || :
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf >/dev/null 2>&1 || :
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -334,8 +334,8 @@ postinst__rocky_8() {
     fi
   fi
 
-  systemd-sysusers
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf
+  systemd-sysusers >/dev/null 2>&1 || :
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf >/dev/null 2>&1 || :
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
@@ -388,8 +388,8 @@ postinst__rocky_9() {
     fi
   fi
 
-  systemd-sysusers
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf
+  systemd-sysusers >/dev/null 2>&1 || :
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf >/dev/null 2>&1 || :
 
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
