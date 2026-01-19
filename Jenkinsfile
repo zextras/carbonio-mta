@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-lib-common@1.1.2',
+    identifier: 'jenkins-lib-common@feat/add-gitleaks',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -26,8 +26,6 @@ pipeline {
         timeout(time: 3, unit: 'HOURS')
     }
 
-
-
     stages {
         stage('Setup') {
             steps {
@@ -36,6 +34,12 @@ pipeline {
                     gitMetadata()
                 }
                 stash includes: '**', name: 'staging'
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                gitleaksStage()
             }
         }
 
