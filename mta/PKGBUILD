@@ -54,6 +54,7 @@ source=(
   "carbonio-mta-sidecar.service"
   "carbonio-mta.hcl"
   "carbonio-mta.sh"
+  "carbonio-mta.slice"
   "carbonio-mta.target"
   "intentions.json"
   "policies.json"
@@ -67,9 +68,10 @@ source=(
 
 sha256sums=(
   'de81be5f1bb32a01b6e7ec31686ea49935adc5120500729318e66f84639dead7'
-  'db832d544723e9e8b26b63bfc05d8e3e12799f30bb233bbd9426751761484ca5'
+  '17ae1dd79c04045709adcc6be9a54b0c30236b2a5f88c20ed5d14b3a16404b9d'
   'f45c5c1150c2fe1b5bbb8936e746c9073659e2491eec96891b667c48d27e2779'
   '7fa8be2620f890a41f9939e72c6f9b45df5a5145f319e3c08b1cd23399e1276c'
+  '6d8cc0dc0ef0615dec2428cc57e3b3653cc240d18611bb52134269e9267b2c48'
   '4599ec6711a850b73ee453c187f3629e3a7b31b460e9bec109496db8832bea2f'
   '87e996a4e37d29d0f575e987faf5166d33a2f4970041b6c880702a41566d3315'
   '240157c8b9bbd1686abd45f5936ccbaf4a63aeab2414b551a6ff6b70de9b4524'
@@ -125,6 +127,8 @@ package() {
   # systemd units and target
   mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
   mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
+  install -Dm644 "${pkgname}.slice" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}.slice"
   install -Dm644 "${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
   ln -sf "/usr/lib/systemd/system/${pkgname}.target" \

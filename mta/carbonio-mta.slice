@@ -1,0 +1,29 @@
+[Unit]
+Description=Carbonio MTA Slice
+Documentation=man:systemd.slice(5)
+Before=slices.target
+PartOf=carbonio-mta.target
+StopWhenUnneeded=yes
+
+[Slice]
+# MTA services: postfix, milter, mailthreat, opendkim, saslauthd, policyd
+# Mail processing requires good I/O performance
+#
+# Scaling guide:
+#   Small  (8GB RAM):   ~1.2GB effective (15% of 8GB)
+#   Medium (32GB RAM):  ~4.8GB effective (15% of 32GB)
+#   Large  (64GB RAM):  ~9.6GB effective (15% of 64GB)
+
+# Memory controls - percentage-based for automatic scaling
+MemoryMax=15%
+MemoryHigh=12%
+
+# CPU weight: high priority for mail flow
+CPUWeight=80
+
+# I/O weight: highest priority (mail queue disk operations)
+IOWeight=100
+
+# Process/thread limit
+# Postfix spawns processes per connection; scale with mail volume
+TasksMax=2048
