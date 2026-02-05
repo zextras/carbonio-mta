@@ -52,6 +52,7 @@ conflicts=(
 source=(
   "211-carbonio-mta.sh"
   "carbonio-mta-sidecar.service"
+  "carbonio-mta-sidecar-legacy.service"
   "carbonio-mta.hcl"
   "carbonio-mta.sh"
   "carbonio-mta.target"
@@ -67,7 +68,8 @@ source=(
 
 sha256sums=(
   'de81be5f1bb32a01b6e7ec31686ea49935adc5120500729318e66f84639dead7'
-  'db832d544723e9e8b26b63bfc05d8e3e12799f30bb233bbd9426751761484ca5'
+  '0385f0f947f1d9e53ea1b3165b950ca3473ec9ce81e09698bc62673062a2f0c4'
+  'e2ff660a65b056962d64d9acb3eda0d9b4463c9f0b31e405e68ba68ab169504a'
   'f45c5c1150c2fe1b5bbb8936e746c9073659e2491eec96891b667c48d27e2779'
   '7fa8be2620f890a41f9939e72c6f9b45df5a5145f319e3c08b1cd23399e1276c'
   '4599ec6711a850b73ee453c187f3629e3a7b31b460e9bec109496db8832bea2f'
@@ -81,14 +83,12 @@ sha256sums=(
   '630adfda297f6483fc5de6b63d3c82732db122600b465d27ee5f1b4783cf02e6'
 )
 
-package() {
+_package() {
   cd "${srcdir}"
 
   # consul for mta
   install -Dm755 "${pkgname}.sh" \
     "${pkgdir}/usr/bin/${pkgname}"
-  install -Dm644 "${pkgname}-sidecar.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
   install -Dm644 "${pkgname}.hcl" \
     "${pkgdir}/etc/zextras/service-discover/${pkgname}.hcl"
   install -Dm644 "211-${pkgname}.sh" \
@@ -121,47 +121,51 @@ package() {
   # systemd tmpfiles.d
   install -Dm644 "${srcdir}/systemd-tmpfile.conf" \
     "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+}
 
+_package_systemd() {
   # systemd units and target
   mkdir -p "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants"
-  mkdir "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants"
   install -Dm644 "${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}.target"
   ln -sf "/usr/lib/systemd/system/${pkgname}.target" \
     "${pkgdir}/usr/lib/systemd/system/carbonio.target.wants/${pkgname}.target"
-  ln -sf "/usr/lib/systemd/system/carbonio-altermime-config.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-altermime-config.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-antivirus.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-antivirus.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-configd.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-configd.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-freshclam.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-freshclam.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-mailthreat.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-mailthreat-update.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat-update.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-mailthreat-update.timer" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-mailthreat-update.timer"
-  ln -sf "/usr/lib/systemd/system/carbonio-milter.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-milter.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-opendkim.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-opendkim.service"
-  # cbpolicyd: disabled by default
-  # ln -sf "/usr/lib/systemd/system/carbonio-policyd.service" \
-  #   "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-policyd.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-postfix.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-postfix.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-saslauthd.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-saslauthd.service"
-  ln -sf "/usr/lib/systemd/system/carbonio-stats.service" \
-    "${pkgdir}/usr/lib/systemd/system/${pkgname}.target.wants/carbonio-stats.service"
+
+  install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
 }
 
-postinst__apt() {
+package() {
+  _package
+  _package_systemd
+}
+
+package__rocky_8() {
+  _package
+  install -Dm644 "${srcdir}/${pkgname}-sidecar-legacy.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
+}
+
+package__rocky_9() {
+  _package
+  _package_systemd
+}
+
+package__ubuntu_jammy() {
+  _package
+  install -Dm644 "${srcdir}/${pkgname}-sidecar-legacy.service" \
+    "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
+}
+
+package__ubuntu_noble() {
+  _package
+  _package_systemd
+}
+
+_postinst_sendmail() {
   #Symlinks
-  if [ ! -e "/usr/sbin/sendmail" ] || [ -L "/usr/bin/sendmail" ]; then
-    if [ -L "/usr/bin/sendmail" ]; then
+  if [ ! -e "/usr/sbin/sendmail" ] || [ -L "/usr/sbin/sendmail" ]; then
+    if [ -L "/usr/sbin/sendmail" ]; then
       SMPATH=$(readlink /usr/sbin/sendmail)
       if [ "$SMPATH" = "/opt/zextras/postfix/sbin/sendmail" ] || [ "$SMPATH" = "/opt/zextras/common/sbin/sendmail" ]; then
         rm -f /usr/sbin/sendmail
@@ -171,7 +175,9 @@ postinst__apt() {
       ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
     fi
   fi
+}
 
+_postinst() {
   # Note: Directory creation for amavisd, clamav, postfix handled by their respective packages' tmpfiles.d
 
   if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
@@ -189,146 +195,77 @@ postinst__apt() {
   systemd-sysusers >/dev/null 2>&1 || :
   systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf >/dev/null 2>&1 || :
 
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload &>/dev/null || :
-    systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
-  fi
-
   echo "======================================================"
   echo "Carbonio mta installed successfully!"
   echo "You must run pending-setups to configure it correctly."
   echo "======================================================"
+}
+
+_postinst_legacy() {
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload &>/dev/null || :
+    systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
+  fi
+}
+
+_postinst_systemd() {
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload &>/dev/null || :
+    systemctl enable carbonio-mta.target &>/dev/null || :
+    systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
+  fi
+}
+
+postinst__ubuntu_jammy() {
+  _postinst_sendmail
+  _postinst
+  _postinst_legacy
 }
 
 postinst__ubuntu_noble() {
-  #Symlinks
-
-  if [ ! -e "/usr/sbin/sendmail" ] || [ -L "/usr/bin/sendmail" ]; then
-    if [ -L "/usr/bin/sendmail" ]; then
-      SMPATH=$(readlink /usr/sbin/sendmail)
-      if [ "$SMPATH" = "/opt/zextras/postfix/sbin/sendmail" ] || [ "$SMPATH" = "/opt/zextras/common/sbin/sendmail" ]; then
-        rm -f /usr/sbin/sendmail
-        ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
-      fi
-    else
-      ln -s /opt/zextras/common/sbin/sendmail /usr/sbin/sendmail
-    fi
-  fi
-
-  # Note: Directory creation for amavisd, clamav, postfix handled by their respective packages' tmpfiles.d
-
-  if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
-    if [ -L /etc/aliases ]; then
-      SMPATH=$(readlink /etc/aliases)
-      if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
-        rm -f /etc/aliases
-        ln -s /opt/zextras/common/conf/aliases /etc/aliases
-      fi
-    else
-      ln -s /opt/zextras/common/conf/aliases /etc/aliases
-    fi
-  fi
-
-  systemd-sysusers >/dev/null 2>&1 || :
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf >/dev/null 2>&1 || :
-
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload &>/dev/null || :
-    systemctl enable carbonio-mta.target &>/dev/null || :
-    systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
-  fi
-
-  echo "======================================================"
-  echo "Carbonio mta installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
+  _postinst_sendmail
+  _postinst
+  _postinst_systemd
 }
 
 postinst__rocky_8() {
-  # Note: Directory creation for amavisd, clamav, postfix handled by their respective packages' tmpfiles.d
-
-  if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
-    if [ -L /etc/aliases ]; then
-      SMPATH=$(readlink /etc/aliases)
-      if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
-        rm -f /etc/aliases
-        ln -s /opt/zextras/common/conf/aliases /etc/aliases
-      fi
-    else
-      ln -s /opt/zextras/common/conf/aliases /etc/aliases
-    fi
-  fi
-
-  systemd-sysusers >/dev/null 2>&1 || :
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf >/dev/null 2>&1 || :
-
-  if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload &>/dev/null || :
-    systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
-  fi
-
-  echo "======================================================"
-  echo "Carbonio mta installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
+  _postinst
+  _postinst_legacy
 }
 
 postinst__rocky_9() {
-  # Note: Directory creation for amavisd, clamav, postfix handled by their respective packages' tmpfiles.d
+  _postinst
+  _postinst_systemd
+}
 
-  if [ ! -e /etc/aliases ] || [ -L /etc/aliases ]; then
-    if [ -L /etc/aliases ]; then
-      SMPATH=$(readlink /etc/aliases)
-      if [ "$SMPATH" = "/opt/zextras/postfix/conf/aliases" ] || [ "$SMPATH" = "/opt/zextras/common/conf/aliases" ]; then
-        rm -f /etc/aliases
-        ln -s /opt/zextras/common/conf/aliases /etc/aliases
-      fi
-    else
-      ln -s /opt/zextras/common/conf/aliases /etc/aliases
-    fi
-  fi
-
-  systemd-sysusers >/dev/null 2>&1 || :
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-mta.conf >/dev/null 2>&1 || :
-
+_prerm_legacy() {
   if [ -d /run/systemd/system ]; then
-    systemctl daemon-reload &>/dev/null || :
-    systemctl enable carbonio-mta.target &>/dev/null || :
-    systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
+    systemctl --no-reload disable carbonio-mta-sidecar.service &>/dev/null || :
+    systemctl stop carbonio-mta-sidecar.service &>/dev/null || :
   fi
+}
 
-  echo "======================================================"
-  echo "Carbonio mta installed successfully!"
-  echo "You must run pending-setups to configure it correctly."
-  echo "======================================================"
+_prerm_systemd() {
+  if [ -d /run/systemd/system ]; then
+    systemctl --no-reload disable --now carbonio-mta.target &>/dev/null || :
+    systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
+  fi
 }
 
 prerm__apt() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-mta-sidecar.service &>/dev/null || :
-    systemctl stop carbonio-mta-sidecar.service &>/dev/null || :
-  fi
+  _prerm_legacy
 }
 
 prerm__ubuntu_noble() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-mta.target &>/dev/null || :
-    systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
-  fi
+  _prerm_systemd
 }
 
 prerm__rocky_8() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable carbonio-mta-sidecar.service &>/dev/null || :
-    systemctl stop carbonio-mta-sidecar.service &>/dev/null || :
-  fi
+  _prerm_legacy
 }
 
 prerm__rocky_9() {
-  if [ -d /run/systemd/system ]; then
-    systemctl --no-reload disable --now carbonio-mta.target &>/dev/null || :
-    systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
-  fi
+  _prerm_systemd
 }
 
 postrm() {
