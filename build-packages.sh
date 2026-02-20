@@ -8,22 +8,22 @@
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <DISTRO>"
-  echo "Available DISTROs: ubuntu-focal, ubuntu-jammy, ubuntu-noble, rocky-8, rocky-9"
+  echo "Available DISTROs: ubuntu-jammy, ubuntu-noble, rocky-8, rocky-9"
   exit 1
 fi
 
 DISTRO=$1
 YAP_FLAGS="-sdc"
-YAP_VERSION=1.11
+YAP_VERSION=1.49
 
 # Validate the DISTRO input
 case $DISTRO in
-  ubuntu-focal | ubuntu-jammy | ubuntu-noble | rocky-8 | rocky-9)
+  ubuntu-jammy | ubuntu-noble | rocky-8 | rocky-9)
     echo "Building for DISTRO: $DISTRO"
     ;;
   *)
     echo "Invalid DISTRO: $DISTRO"
-    echo "Available DISTROs: ubuntu-focal, ubuntu-jammy, ubuntu-noble, rocky-9"
+    echo "Available DISTROs: ubuntu-jammy, ubuntu-noble, rocky-8, rocky-9"
     exit 1
     ;;
 esac
