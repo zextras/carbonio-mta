@@ -7,7 +7,7 @@ ENV LDAP_HOST=openldap
 ENV LDAP_PORT=1389
 EXPOSE 25
 
-RUN apt update && apt install -y gnupg2 ca-certificates && apt clean && \
+RUN apt update && apt install -y gnupg2 ca-certificates systemd-standalone-sysusers systemd-standalone-tmpfiles && apt clean && \
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 52FD40243E584A21 && \
 echo deb https://repo.zextras.io/release/ubuntu jammy main > /etc/apt/sources.list.d/zextras.list && \
 apt update && apt install -y carbonio-postfix telnet netcat && apt clean
