@@ -56,7 +56,7 @@ pipeline {
             steps {
                 echo 'Building deb/rpm packages'
                 buildStage([
-                    buildFlags: ' -s '
+                    buildFlags: ' -ds '
                 ])
             }
         }
