@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-lib-common@1.7.5',
+    identifier: 'jenkins-lib-common@v2.7.0',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -47,7 +47,8 @@ pipeline {
                     ocLabels: [
                         title: 'Carbonio MTA',
                         descriptionFile: 'docker/mta/description.md',
-                    ]
+                    ],
+                    platforms: ['linux/amd64', 'linux/arm64'] as Set,
                 ])
             }
         }
