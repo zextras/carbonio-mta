@@ -27,6 +27,7 @@ depends__apt=(
   "carbonio-postfix"
   "carbonio-spamassassin-rules"
   "sqlite3"
+  "service-discover-base"
 )
 depends__yum=(
   "carbonio-altermime"
@@ -41,6 +42,7 @@ depends__yum=(
   "carbonio-postfix"
   "carbonio-spamassassin-rules"
   "sqlite"
+  "service-discover-base"
 )
 provides=(
   "mail-transport-agent"
