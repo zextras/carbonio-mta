@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-lib-common@v2.7.1',
+    identifier: 'jenkins-lib-common@v2.8.7',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -67,9 +67,7 @@ pipeline {
                 jfrog 'jfrog-cli'
             }
             steps {
-                uploadStage(
-                    packages: yapHelper.resolvePackageNames()
-                )
+                uploadStage()
             }
         }
     }
