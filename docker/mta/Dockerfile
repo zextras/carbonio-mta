@@ -26,7 +26,9 @@ RUN apt-get update \
       carbonio-postfix:${TARGETARCH} \
       carbonio-icu:${TARGETARCH} \
       carbonio-openssl:${TARGETARCH} \
+      carbonio-openldap:${TARGETARCH} \
       carbonio-cyrus-sasl:${TARGETARCH} \
+      carbonio-mariadb:${TARGETARCH} \
       liblmdb0:${TARGETARCH} \
       libnsl2:${TARGETARCH} \
       libpcre3:${TARGETARCH} \
@@ -38,6 +40,22 @@ RUN apt-get update \
  && mkdir -p /staging/usr/local/lib \
  && find /staging/lib /staging/usr/lib -name '*.so*' -not -path '*/opt/*' \
     -exec cp -P {} /staging/usr/local/lib/ \; 2>/dev/null || true \
+ # Stage /etc additions: postfix/postdrop users + groups (postinst scripts are skipped
+ # by dpkg -x, so synthesize them here — runs on BUILDPLATFORM, no QEMU needed).
+ # UIDs match Debian/Ubuntu carbonio-postfix defaults.
+ && mkdir -p /staging/etc \
+ && cp /etc/passwd /etc/group /etc/shadow /staging/etc/ \
+ && printf 'postfix:x:114:121:Postfix Mail Transport Agent,,,:/var/spool/postfix:/usr/sbin/nologin\n' >> /staging/etc/passwd \
+ && printf 'postfix:x:121:\npostdrop:x:122:\n' >> /staging/etc/group \
+ && printf 'postfix:!:19000:0:99999:7:::\n' >> /staging/etc/shadow \
+ # Chown staged spool/data dirs by numeric UID/GID so ownership survives COPY.
+ # spool/. must be root:root; queue subdirs are postfix:postfix; maildrop/public are postfix:postdrop.
+ # postqueue/postdrop binaries need root:postdrop + setgid (g+s).
+ && chown -R 114:121 /staging/opt/zextras/data/postfix 2>/dev/null || true \
+ && chown 0:0 /staging/opt/zextras/data/postfix/spool 2>/dev/null || true \
+ && chown 114:122 /staging/opt/zextras/data/postfix/spool/maildrop /staging/opt/zextras/data/postfix/spool/public 2>/dev/null || true \
+ && chown 0:122 /staging/opt/zextras/common/sbin/postqueue /staging/opt/zextras/common/sbin/postdrop 2>/dev/null || true \
+ && chmod 2755 /staging/opt/zextras/common/sbin/postqueue /staging/opt/zextras/common/sbin/postdrop 2>/dev/null || true \
  && rm -rf /var/lib/apt/lists/*
 
 # Stage 2: final image — TARGETPLATFORM, zero RUN steps (no QEMU needed).
@@ -53,6 +71,10 @@ EXPOSE 25
 
 COPY --from=postfix-installer /staging/opt /opt
 COPY --from=postfix-installer /staging/usr/local/lib /usr/local/lib/
+# Merged /etc/{passwd,group,shadow} with postfix + postdrop entries added
+COPY --from=postfix-installer /staging/etc/passwd /etc/passwd
+COPY --from=postfix-installer /staging/etc/group /etc/group
+COPY --from=postfix-installer /staging/etc/shadow /etc/shadow
 
 COPY docker/mta/conf/ /opt/zextras/conf/
 COPY docker/mta/postfix_header_checks /opt/zextras/conf/postfix_header_checks
