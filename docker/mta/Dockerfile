@@ -58,4 +58,22 @@ COPY docker/mta/conf/ /opt/zextras/conf/
 COPY docker/mta/postfix_header_checks /opt/zextras/conf/postfix_header_checks
 COPY --chmod=755 docker/mta/entrypoint.sh /entrypoint.sh
 
+# carbonio-postfix's postinst (skipped here because we extract debs with `dpkg -x`)
+# normally creates the postfix user/postdrop group and sets SGID + spool ownership.
+# Without it postfix dies at startup: "mail_owner: unknown user name value: postfix".
+RUN groupadd -r postdrop \
+ && groupadd -r postfix \
+ && useradd -r -g postfix -d /opt/zextras/postfix -s /sbin/nologin -c "postfix user" postfix \
+ && chgrp postdrop /opt/zextras/common/sbin/postqueue /opt/zextras/common/sbin/postdrop \
+ && chmod u=rwx,g=rsx,o=rx /opt/zextras/common/sbin/postqueue /opt/zextras/common/sbin/postdrop \
+ && chown postfix /opt/zextras/data/postfix \
+ && chown -R postfix:postfix /opt/zextras/data/postfix/spool \
+ && chown root:root /opt/zextras/data/postfix/spool \
+ && chown postfix:root /opt/zextras/data/postfix/spool/pid \
+ && chgrp postdrop /opt/zextras/data/postfix/spool/public \
+ && chgrp postdrop /opt/zextras/data/postfix/spool/maildrop \
+ && chmod 730 /opt/zextras/data/postfix/spool/maildrop \
+ && chown postfix:postdrop /opt/zextras/data/postfix/data \
+ && chmod 755 /opt/zextras/data/postfix/data
+
 ENTRYPOINT ["/entrypoint.sh"]
