@@ -20,13 +20,17 @@ RUN apt-get update \
  && printf 'deb [arch=%s trusted=yes] https://repo.area51-zextras.com/devel/ubuntu jammy main\n' "${TARGETARCH}" \
     > /etc/apt/sources.list.d/zextras.list \
  && apt-get update \
- # Download only the packages needed to run postfix — no dep resolution, no carbonio-core
+ # Download only the packages needed to run postfix — no dep resolution, no carbonio-core.
+ # carbonio-openldap is REQUIRED because postfix is linked against libldap.so.2,
+ # which the carbonio-openldap package ships under /opt/zextras/common/lib/.
  && mkdir -p /staging /tmp/debs && cd /tmp/debs \
  && apt-get download \
       carbonio-postfix:${TARGETARCH} \
       carbonio-icu:${TARGETARCH} \
       carbonio-openssl:${TARGETARCH} \
       carbonio-cyrus-sasl:${TARGETARCH} \
+      carbonio-openldap:${TARGETARCH} \
+      carbonio-mariadb:${TARGETARCH} \
       liblmdb0:${TARGETARCH} \
       libnsl2:${TARGETARCH} \
       libpcre3:${TARGETARCH} \
@@ -34,9 +38,11 @@ RUN apt-get update \
  # Extract all debs with dpkg -x — no postinst scripts run
  && for deb in /tmp/debs/*.deb; do dpkg -x "$deb" /staging; done \
  && rm -rf /tmp/debs \
- # Collect arch-specific libs into /staging/usr/local/lib for arch-independent COPY
+ # Collect arch-specific libs (Ubuntu base + Carbonio /opt libs) into
+ # /staging/usr/local/lib so a single arch-independent COPY suffices.
+ # NOTE: do NOT exclude /opt/* — Carbonio libs (libldap.so.2, etc.) live there.
  && mkdir -p /staging/usr/local/lib \
- && find /staging/lib /staging/usr/lib -name '*.so*' -not -path '*/opt/*' \
+ && find /staging/lib /staging/usr/lib /staging/opt -name '*.so*' \
     -exec cp -P {} /staging/usr/local/lib/ \; 2>/dev/null || true \
  && rm -rf /var/lib/apt/lists/*
 
@@ -47,12 +53,25 @@ USER root
 ENV LDAP_ROOT_PASSWORD=qh6hWZvc
 ENV LDAP_HOST=openldap
 ENV LDAP_PORT=1389
-ENV LD_LIBRARY_PATH=/usr/local/lib
+ENV LD_LIBRARY_PATH=/usr/local/lib:/opt/zextras/common/lib
 
 EXPOSE 25
 
 COPY --from=postfix-installer /staging/opt /opt
 COPY --from=postfix-installer /staging/usr/local/lib /usr/local/lib/
+
+# Create postfix user/group that the package postinst would normally create
+# (mirrors /usr/lib/sysusers.d/carbonio-postfix.conf shipped by carbonio-thirds).
+# Also pre-create the log file expected by the entrypoint's `tail -f`.
+RUN groupadd -r postdrop \
+ && groupadd -r postfix \
+ && useradd  -r -g postfix -G postdrop -d /opt/zextras/postfix \
+             -s /usr/sbin/nologin -c "postfix user" postfix \
+ && install -d -m 0755 /var/log \
+ && install -o postfix -g postfix -m 0644 /dev/null /var/log/postfix.log \
+ # The package postinst would normally chown queue dirs to postfix:postdrop;
+ # `dpkg -x` left them root-owned, so fix ownership/permissions explicitly.
+ && /opt/zextras/common/sbin/postfix set-permissions
 
 COPY docker/mta/conf/ /opt/zextras/conf/
 COPY docker/mta/postfix_header_checks /opt/zextras/conf/postfix_header_checks
