@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-lib-common@v2.8.8',
+    identifier: 'jenkins-lib-common@1.7.5',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -47,8 +47,7 @@ pipeline {
                     ocLabels: [
                         title: 'Carbonio MTA',
                         descriptionFile: 'docker/mta/description.md',
-                    ],
-                    platforms: ['linux/amd64'] as Set,
+                    ]
                 ])
             }
         }
@@ -67,7 +66,9 @@ pipeline {
                 jfrog 'jfrog-cli'
             }
             steps {
-                uploadStage()
+                uploadStage(
+                    packages: yapHelper.resolvePackageNames()
+                )
             }
         }
     }
