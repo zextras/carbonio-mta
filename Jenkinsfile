@@ -48,7 +48,7 @@ pipeline {
                         title: 'Carbonio MTA',
                         descriptionFile: 'docker/mta/description.md',
                     ],
-                    platforms: ['linux/amd64', 'linux/arm64'] as Set,
+                    platforms: ['linux/amd64'] as Set,
                 ])
             }
         }
