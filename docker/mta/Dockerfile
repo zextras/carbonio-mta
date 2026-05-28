@@ -60,18 +60,11 @@ EXPOSE 25
 COPY --from=postfix-installer /staging/opt /opt
 COPY --from=postfix-installer /staging/usr/local/lib /usr/local/lib/
 
-# Create postfix user/group that the package postinst would normally create
-# (mirrors /usr/lib/sysusers.d/carbonio-postfix.conf shipped by carbonio-thirds).
-# Also pre-create the log file expected by the entrypoint's `tail -f`.
-RUN groupadd -r postdrop \
- && groupadd -r postfix \
- && useradd  -r -g postfix -G postdrop -d /opt/zextras/postfix \
-             -s /usr/sbin/nologin -c "postfix user" postfix \
- && install -d -m 0755 /var/log \
- && install -o postfix -g postfix -m 0644 /dev/null /var/log/postfix.log \
- # The package postinst would normally chown queue dirs to postfix:postdrop;
- # `dpkg -x` left them root-owned, so fix ownership/permissions explicitly.
- && /opt/zextras/common/sbin/postfix set-permissions
+# NOTE: stage 2 keeps zero RUN steps so it never needs QEMU when building
+# for a TARGETPLATFORM that differs from the BUILDPLATFORM. The work that
+# the package's postinst would normally perform (create postfix/postdrop
+# users, chown queue dirs, pre-create the log file) is done at container
+# startup by entrypoint.sh, where the target architecture runs natively.
 
 COPY docker/mta/conf/ /opt/zextras/conf/
 COPY docker/mta/postfix_header_checks /opt/zextras/conf/postfix_header_checks
