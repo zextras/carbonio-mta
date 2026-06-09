@@ -5,12 +5,23 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 #
 
+# Fail fast: surface the real startup error instead of masking it behind `tail -f`.
+set -e
+
 sed -i -e "s/LDAP_HOST/${LDAP_HOST}/g" /opt/zextras/conf/*.cf
 sed -i -e "s/LDAP_PORT/${LDAP_PORT}/g" /opt/zextras/conf/*.cf
 sed -i -e "s/LDAP_ROOT_PASSWORD/${LDAP_ROOT_PASSWORD}/g" /opt/zextras/conf/*.cf
 sed -i -e "s#LDAP_URL#${LDAP_URL}#g" /opt/zextras/conf/*.cf
 
 /opt/zextras/common/sbin/postconf maillog_file=/var/log/postfix.log
+
+# Pre-create the log so the final `tail -f` never races/masks a startup failure.
+install -o postfix -g postfix -m 0644 /dev/null /var/log/postfix.log
+
+# Normalize spool/queue ownership & setgid bits at runtime. The Dockerfile sets
+# these at build time, but a volume-mounted spool can reset them; set-permissions
+# is postfix's canonical, idempotent way to restore them before start.
+/opt/zextras/common/sbin/postfix set-permissions
 
 /opt/zextras/common/sbin/postfix start
 

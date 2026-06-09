@@ -36,6 +36,13 @@ RUN apt-get update \
  # Extract all debs with dpkg -x — no postinst scripts run
  && for deb in /tmp/debs/*.deb; do dpkg -x "$deb" /staging; done \
  && rm -rf /tmp/debs \
+ # carbonio-postfix ships main.cf as a template with `sample_directory =` empty;
+ # its postinst (skipped by dpkg -x) would normally finalize it. postfix rejects an
+ # empty *_directory at startup (fatal: bad string length 0 < 1). Finalize it here —
+ # a pure text edit, so it runs on BUILDPLATFORM with no QEMU, just like the user/perm
+ # synthesis below. Keeps the shipped image config valid.
+ && sed -i 's|^sample_directory[[:space:]]*=.*|sample_directory = /opt/zextras/common/conf|' \
+      /staging/opt/zextras/common/conf/main.cf \
  # Collect arch-specific libs into /staging/usr/local/lib for arch-independent COPY
  && mkdir -p /staging/usr/local/lib \
  && find /staging/lib /staging/usr/lib -name '*.so*' -not -path '*/opt/*' \
