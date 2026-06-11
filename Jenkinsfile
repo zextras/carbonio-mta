@@ -26,17 +26,23 @@ pipeline {
         timeout(time: 3, unit: 'HOURS')
     }
 
-
-
     stages {
         stage('Setup') {
             steps {
                 checkout scm
-                script {
-                    gitMetadata()
-                }
+                gitMetadata()
                 stash includes: '**', name: 'staging'
             }
+        }
+
+        stage('Skip CI') {
+            steps {
+                script { semanticRelease.guard() }
+            }
+        }
+
+        stage('Security Scan') {
+            steps { gitleaksStage() }
         }
 
         stage('Publish docker images') {
@@ -68,6 +74,12 @@ pipeline {
             }
             steps {
                 uploadStage()
+            }
+        }
+
+        stage('Semantic Release') {
+            steps {
+                semanticRelease()
             }
         }
     }
