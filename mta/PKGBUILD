@@ -1,5 +1,5 @@
 pkgname="carbonio-mta"
-pkgver="4.2.4"
+pkgver="4.2.5"
 pkgrel="1"
 pkgdesc="An open-source, community-driven email server"
 maintainer="Zextras <packages@zextras.com>"
@@ -13,7 +13,7 @@ license=(
 url="https://github.com/zextras"
 section="mail"
 priority="optional"
-arch=('x86_64')
+arch=('any')
 depends__apt=(
   "carbonio-altermime"
   "carbonio-amavisd"
@@ -27,6 +27,7 @@ depends__apt=(
   "carbonio-postfix"
   "carbonio-spamassassin-rules"
   "sqlite3"
+  "service-discover-base"
 )
 depends__yum=(
   "carbonio-altermime"
@@ -41,6 +42,7 @@ depends__yum=(
   "carbonio-postfix"
   "carbonio-spamassassin-rules"
   "sqlite"
+  "service-discover-base"
 )
 provides=(
   "mail-transport-agent"
