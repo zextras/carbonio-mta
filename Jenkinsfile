@@ -31,7 +31,6 @@ pipeline {
             steps {
                 checkout scm
                 gitMetadata()
-                stash includes: '**', name: 'staging'
             }
         }
 
