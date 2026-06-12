@@ -1,3 +1,10 @@
+## [4.2.6](https://github.com/zextras/carbonio-mta/compare/4.2.5...4.2.6) (2026-06-12)
+
+### Bug Fixes
+
+* **docker:** add missing carbonio runtime deps + postfix users ([#65](https://github.com/zextras/carbonio-mta/issues/65)) ([4b7f505](https://github.com/zextras/carbonio-mta/commit/4b7f505dd348e8f1f0eb523af90728008f0d9af1))
+* use tagFormat without v prefix to match existing tags ([53a429d](https://github.com/zextras/carbonio-mta/commit/53a429d64f80ad16c72fd192b4a7aff2f836b116))
+
 ## 1.0.0 (2026-06-11)
 
 ### Features
