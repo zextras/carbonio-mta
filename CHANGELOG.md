@@ -1,3 +1,9 @@
+## [4.2.7](https://github.com/zextras/carbonio-mta/compare/4.2.6...4.2.7) (2026-06-15)
+
+### Bug Fixes
+
+* **Dockerfile:** non-empty sample directory ([#78](https://github.com/zextras/carbonio-mta/issues/78)) ([154d82a](https://github.com/zextras/carbonio-mta/commit/154d82ad7d587488f7023465a062da0702ec3580))
+
 ## [4.2.6](https://github.com/zextras/carbonio-mta/compare/4.2.5...4.2.6) (2026-06-12)
 
 ### Bug Fixes
