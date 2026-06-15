@@ -11,6 +11,7 @@ sed -i -e "s/LDAP_ROOT_PASSWORD/${LDAP_ROOT_PASSWORD}/g" /opt/zextras/conf/*.cf
 sed -i -e "s#LDAP_URL#${LDAP_URL}#g" /opt/zextras/conf/*.cf
 
 /opt/zextras/common/sbin/postconf maillog_file=/var/log/postfix.log
+/opt/zextras/common/sbin/postconf sample_directory=no
 
 /opt/zextras/common/sbin/postfix start
 
