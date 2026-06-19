@@ -3,7 +3,7 @@
 # Stage 1: runs natively on BUILDPLATFORM (amd64 CI builder) — no QEMU.
 # Downloads carbonio-postfix + runtime libs for TARGETARCH via apt-get download
 # (no dep resolution, no postinst scripts, no service-discover/carbonio-core).
-FROM --platform=$BUILDPLATFORM docker.io/library/ubuntu:jammy AS postfix-installer
+FROM --platform=$BUILDPLATFORM docker.io/library/ubuntu:resolute AS postfix-installer
 
 ARG TARGETARCH
 ARG BUILDARCH=amd64
@@ -59,7 +59,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 # Stage 2: final image — TARGETPLATFORM, zero RUN steps (no QEMU needed).
-FROM --platform=$TARGETPLATFORM docker.io/library/ubuntu:jammy
+FROM --platform=$TARGETPLATFORM docker.io/library/ubuntu:resolute
 USER root
 
 ENV LDAP_ROOT_PASSWORD=qh6hWZvc
