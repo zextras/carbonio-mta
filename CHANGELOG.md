@@ -1,3 +1,9 @@
+## [4.2.9](https://github.com/zextras/carbonio-mta/compare/4.2.8...4.2.9) (2026-09-16)
+
+### Bug Fixes
+
+* **docker:** pull Carbonio deps from Nexus instead of area51 ([#102](https://github.com/zextras/carbonio-mta/issues/102)) ([aa2a448](https://github.com/zextras/carbonio-mta/commit/aa2a44815d2dc64cb59d1d9a96b12f80f2c58670))
+
 ## [4.2.7](https://github.com/zextras/carbonio-mta/compare/4.2.6...4.2.7) (2026-06-15)
 
 ### Bug Fixes
