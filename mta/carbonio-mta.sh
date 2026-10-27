@@ -55,21 +55,17 @@ consul config write ${SERVICE_BASE_DIR}/service-protocol.json
 # Allow other services to contact this service (nothing at the moment)
 consul config write ${SERVICE_BASE_DIR}/intentions.json
 
-# Create ACL token
-if [[ ! -f "${SERVICE_BASE_DIR}/token" ]]; then
-    # create the token
-    consul acl token create -format json -policy-name "${POLICY_NAME}" -description "Token for ${SERVICE_NAME}/$(hostname -A)" |
-      jq -r '.SecretID' > ${SERVICE_BASE_DIR}/token;
-fi
-
-chown ${SERVICE_USER}:${SERVICE_GROUP} ${SERVICE_BASE_DIR}/token
-chmod 0600 ${SERVICE_BASE_DIR}/token
+service-discover service-token ensure --service "${SERVICE_NAME}" --policy "${POLICY_NAME}" \
+  --token-file "${SERVICE_BASE_DIR}/token" --owner "${SERVICE_USER}"
 
 consul reload
 
+systemctl restart ${SERVICE_NAME}-sidecar.service
+
+# Remove the tokens leaked by previous setups, only after the services use the new token
+service-discover service-token prune-legacy --service "${SERVICE_NAME}" --policy "${POLICY_NAME}"
+
 # limit token visibility as much as possible
 export -n CONSUL_HTTP_TOKEN
-
-systemctl restart ${SERVICE_NAME}-sidecar.service
 
 trap - EXIT
