@@ -1,3 +1,9 @@
+## [4.2.10](https://github.com/zextras/carbonio-mta/compare/v4.2.9...v4.2.10) (2026-11-03)
+
+### Bug Fixes
+
+* **setup:** reuse a deterministic Consul token per node - CO-3612 ([#118](https://github.com/zextras/carbonio-mta/issues/118)) ([944928e](https://github.com/zextras/carbonio-mta/commit/944928e49b7d673cce5e8a19b5202c722afd7f01))
+
 ## [4.2.9](https://github.com/zextras/carbonio-mta/compare/4.2.8...4.2.9) (2026-09-16)
 
 ### Bug Fixes
