@@ -55,6 +55,12 @@ pipeline {
                     ],
                     platforms: ['linux/amd64', 'linux/arm64'] as Set,
                 ])
+                dockerStage([
+                    dockerfile: 'docker/mta-sidecar/Dockerfile',
+                    imageName: 'carbonio-mta-sidecar',
+                    ocLabels: [title: 'Carbonio MTA Sidecar'],
+                    platforms: ['linux/amd64', 'linux/arm64'] as Set,
+                ])
             }
         }
 
