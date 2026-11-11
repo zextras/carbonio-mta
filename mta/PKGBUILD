@@ -1,6 +1,6 @@
 pkgname="carbonio-mta"
 pkgver="4.2.8"
-pkgrel="1"
+pkgrel="2"
 pkgdesc="An open-source, community-driven email server"
 maintainer="Zextras <packages@zextras.com>"
 copyright=(
@@ -18,6 +18,7 @@ depends__apt=(
   "carbonio-altermime"
   "carbonio-amavisd"
   "carbonio-clamav"
+  "carbonio-configd>=1.3.0"
   "carbonio-core"
   "carbonio-mariadb"
   "carbonio-opendkim"
@@ -33,6 +34,7 @@ depends__yum=(
   "carbonio-altermime"
   "carbonio-amavisd"
   "carbonio-clamav"
+  "carbonio-configd>=1.3.0"
   "carbonio-core"
   "carbonio-mariadb"
   "carbonio-opendkim"
@@ -82,7 +84,7 @@ sha256sums=(
   '4c86497fd1a5ec0bcca2250e10f477f5c4f4f178dc4a62173383f0b4e53a5829'
   '18aec2fc0c687f24f40bad9a6f64bb4f00ea513a218e6a3c5cdf3c900dff8a40'
   '6f69c0041b463cbb24c80d980042298b8c29fed70bac6a221e5fec5fcd995a2c'
-  '630adfda297f6483fc5de6b63d3c82732db122600b465d27ee5f1b4783cf02e6'
+  '34bbab57476dd57347181dfbc9c9b3d0ef0860a1ebb714f3d66016c143975edf'
 )
 
 _package() {
@@ -103,11 +105,11 @@ _package() {
     "${pkgdir}/etc/carbonio/mta/service-discover/service-protocol.json"
 
   # postfix
-  install -D postfix_master.cf.in \
+  install -Dm644 postfix_master.cf.in \
     "${pkgdir}/opt/zextras/common/conf/master.cf.in"
-  install -D postfix_tag_as_foreign.re.in \
+  install -Dm644 postfix_tag_as_foreign.re.in \
     "${pkgdir}/opt/zextras/common/conf/tag_as_foreign.re.in"
-  install -D postfix_tag_as_originating.re.in \
+  install -Dm644 postfix_tag_as_originating.re.in \
     "${pkgdir}/opt/zextras/common/conf/tag_as_originating.re.in"
 
   mkdir -p "${pkgdir}/opt/zextras/data/altermime/"
