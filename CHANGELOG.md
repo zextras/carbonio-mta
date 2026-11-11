@@ -1,3 +1,9 @@
+## [4.2.11](https://github.com/zextras/carbonio-mta/compare/v4.2.10...v4.2.11) (2026-11-11)
+
+### Bug Fixes
+
+* **mta:** ship Postfix config templates root-owned (CO-4621) ([#123](https://github.com/zextras/carbonio-mta/issues/123)) ([21d3236](https://github.com/zextras/carbonio-mta/commit/21d323609047e0278d7b09e2574bb989a779715e))
+
 ## [4.2.10](https://github.com/zextras/carbonio-mta/compare/v4.2.9...v4.2.10) (2026-11-03)
 
 ### Bug Fixes
