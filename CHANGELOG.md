@@ -1,3 +1,9 @@
+## [4.2.12](https://github.com/zextras/carbonio-mta/compare/v4.2.11...v4.2.12) (2026-11-13)
+
+### Bug Fixes
+
+* skip the sidecar until its Consul token exists (CO-4746) ([#125](https://github.com/zextras/carbonio-mta/issues/125)) ([63149f8](https://github.com/zextras/carbonio-mta/commit/63149f855115823682c806ded843b559b7e5ab0d))
+
 ## [4.2.11](https://github.com/zextras/carbonio-mta/compare/v4.2.10...v4.2.11) (2026-11-11)
 
 ### Bug Fixes
