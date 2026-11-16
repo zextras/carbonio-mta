@@ -1,3 +1,9 @@
+## [4.2.13](https://github.com/zextras/carbonio-mta/compare/v4.2.12...v4.2.13) (2026-11-16)
+
+### Bug Fixes
+
+* [CO-3502] bind the mta sidecar to carbonio-mta.target ([#126](https://github.com/zextras/carbonio-mta/issues/126)) ([1fcaedb](https://github.com/zextras/carbonio-mta/commit/1fcaedb605ac6d325d1ef9d836ba42c5cf705453))
+
 ## [4.2.12](https://github.com/zextras/carbonio-mta/compare/v4.2.11...v4.2.12) (2026-11-13)
 
 ### Bug Fixes
