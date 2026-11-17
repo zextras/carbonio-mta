@@ -53,6 +53,13 @@ conflicts=(
   "mail-transport-agent"
 )
 
+# carbonio-core < 4.10.0 shipped these scheduled-job units. Replaces lets dpkg
+# take the files over when carbonio-mta is unpacked before core is upgraded.
+# Noble only: it is the only Debian package that ships the units, and on RPM yap
+# would turn replaces into Obsoletes.
+replaces__ubuntu_noble=(
+  "carbonio-core<4.10.0"
+)
 source=(
   "211-carbonio-mta.sh"
   "carbonio-mta-sidecar.service"
@@ -68,6 +75,20 @@ source=(
   "service-protocol.json"
   "systemd-sysuser.conf"
   "systemd-tmpfile.conf"
+  "carbonio-mta-queue-log.service"
+  "carbonio-mta-queue-log.timer"
+  "carbonio-antispam-train.service"
+  "carbonio-antispam-train.timer"
+  "carbonio-antispam-train-cleanup.service"
+  "carbonio-antispam-train-cleanup.timer"
+  "carbonio-antispam-bayes-expire.service"
+  "carbonio-antispam-bayes-expire.timer"
+  "carbonio-mailthreat-tmp-cleanup.service"
+  "carbonio-mailthreat-tmp-cleanup.timer"
+  "carbonio-mailthreat-quarantine-cleanup.service"
+  "carbonio-mailthreat-quarantine-cleanup.timer"
+  "carbonio-policyd-cleanup.service"
+  "carbonio-policyd-cleanup.timer"
 )
 
 sha256sums=(
@@ -85,6 +106,20 @@ sha256sums=(
   '18aec2fc0c687f24f40bad9a6f64bb4f00ea513a218e6a3c5cdf3c900dff8a40'
   '6f69c0041b463cbb24c80d980042298b8c29fed70bac6a221e5fec5fcd995a2c'
   '3620ec8fe918054a6af67bd6bba44df31e71c209779970ad3a7424e6b1f090a7'
+  'aad5bd1557340508a99513ab57e90956b089f1dfc2e0ef1e35c6d561c2005eaa'
+  '67ccf0d0b75f030edc28bd22ff8f9bed7615741f5217b7f5d3e87576b35885c3'
+  'c4d5635c6654bcd154b86dbbfc75206699aa47df55199ca8a64d4a1780840818'
+  'b7a0a695d71b92e6b3cead4bbecee296311e700b7e3c56f90d1bb85f4cd2c29d'
+  'c897f73ebf85a6655ede325d40684ff46d121402500c7f1f51b398bab276ed0a'
+  '2f1127fbe8d29ca850eb79300dab776b9125058886a69dd71a214d123860a8b8'
+  'b45a416c524a74692809fc8204ab31b895c0cc4547553ae697d8a6f6677e18e0'
+  '066bc54dd93673fc8151da1b8206f3d7186b10ffd2699ad8490805262ff723f0'
+  'dbb05df53392ec19730c2c1fdcfe9f0400b2802dfaf54aa4b8dc04d84fe1bf0d'
+  '06b6c4e225c137532e250cc47c83669ad5e8721c8646a6ca643d9610a8f8a8b6'
+  '1945f66d51a371d4530b2e29f144287bd3a25de89b005e7e23d5fc377d89234e'
+  '8d20143ee1f89409b794877a64c9287f45eb79896d957c5c83428fb9994ac016'
+  '5d5d58cb01efea52fbd4b79a1118d100358568b60ad6095bdecd79f8382fb0a8'
+  'b53b6a08db40356c6a591cc97564a63b346a7a798b94733d6dca12d84722b51a'
 )
 
 _package() {
@@ -134,6 +169,41 @@ _package_systemd() {
 
   install -Dm644 "${srcdir}/${pkgname}-sidecar.service" \
     "${pkgdir}/usr/lib/systemd/system/${pkgname}-sidecar.service"
+
+  install -Dm644 "${srcdir}/carbonio-mta-queue-log.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-mta-queue-log.service"
+  install -Dm644 "${srcdir}/carbonio-mta-queue-log.timer" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-mta-queue-log.timer"
+
+  install -Dm644 "${srcdir}/carbonio-antispam-train.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-antispam-train.service"
+  install -Dm644 "${srcdir}/carbonio-antispam-train.timer" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-antispam-train.timer"
+
+  install -Dm644 "${srcdir}/carbonio-antispam-train-cleanup.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-antispam-train-cleanup.service"
+  install -Dm644 "${srcdir}/carbonio-antispam-train-cleanup.timer" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-antispam-train-cleanup.timer"
+
+  install -Dm644 "${srcdir}/carbonio-antispam-bayes-expire.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-antispam-bayes-expire.service"
+  install -Dm644 "${srcdir}/carbonio-antispam-bayes-expire.timer" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-antispam-bayes-expire.timer"
+
+  install -Dm644 "${srcdir}/carbonio-mailthreat-tmp-cleanup.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-mailthreat-tmp-cleanup.service"
+  install -Dm644 "${srcdir}/carbonio-mailthreat-tmp-cleanup.timer" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-mailthreat-tmp-cleanup.timer"
+
+  install -Dm644 "${srcdir}/carbonio-mailthreat-quarantine-cleanup.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-mailthreat-quarantine-cleanup.service"
+  install -Dm644 "${srcdir}/carbonio-mailthreat-quarantine-cleanup.timer" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-mailthreat-quarantine-cleanup.timer"
+
+  install -Dm644 "${srcdir}/carbonio-policyd-cleanup.service" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-policyd-cleanup.service"
+  install -Dm644 "${srcdir}/carbonio-policyd-cleanup.timer" \
+    "${pkgdir}/usr/lib/systemd/system/carbonio-policyd-cleanup.timer"
 }
 
 package() {
@@ -206,6 +276,10 @@ _postinst_legacy() {
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
     systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
+    systemctl enable carbonio-mta-queue-log.timer carbonio-antispam-train.timer carbonio-antispam-train-cleanup.timer carbonio-antispam-bayes-expire.timer carbonio-mailthreat-tmp-cleanup.timer carbonio-mailthreat-quarantine-cleanup.timer carbonio-policyd-cleanup.timer &>/dev/null || :
+    if systemctl -q is-active carbonio-mta.target; then
+      systemctl start carbonio-mta-queue-log.timer carbonio-antispam-train.timer carbonio-antispam-train-cleanup.timer carbonio-antispam-bayes-expire.timer carbonio-mailthreat-tmp-cleanup.timer carbonio-mailthreat-quarantine-cleanup.timer carbonio-policyd-cleanup.timer &>/dev/null || :
+    fi
   fi
 }
 
@@ -250,6 +324,7 @@ _prerm_systemd() {
   if [ -d /run/systemd/system ]; then
     systemctl --no-reload disable --now carbonio-mta.target &>/dev/null || :
     systemctl --no-reload disable --now carbonio-mta-sidecar.service &>/dev/null || :
+    systemctl --no-reload disable --now carbonio-mta-queue-log.timer carbonio-antispam-train.timer carbonio-antispam-train-cleanup.timer carbonio-antispam-bayes-expire.timer carbonio-mailthreat-tmp-cleanup.timer carbonio-mailthreat-quarantine-cleanup.timer carbonio-policyd-cleanup.timer &>/dev/null || :
   fi
 }
 

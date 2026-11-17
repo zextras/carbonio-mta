@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+[Unit]
+Description=Carbonio Mail Threat Temporary Files Cleanup Twice Daily
+Documentation=https://docs.zextras.com/
+PartOf=carbonio-mta.target
+
+[Timer]
+OnCalendar=*-*-* 05,20:15:00
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=carbonio-mta.target
