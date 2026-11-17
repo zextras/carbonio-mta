@@ -68,7 +68,7 @@ lmtp      unix  -       -       n       -       -       lmtp
 anvil     unix  -       -       n       -       1       anvil
 scache	  unix	-	-	n	-	1	scache
 %%uncomment VAR:zimbraMtaEnableSmtpdPolicyd%%policy    unix  -       n       n       -       0       spawn
-%%uncomment VAR:zimbraMtaEnableSmtpdPolicyd%%	user=zimbra argv=/usr/bin/perl /opt/zextras/libexec/zmpostfixpolicyd
+%%uncomment VAR:zimbraMtaEnableSmtpdPolicyd%%	user=zextras argv=/usr/bin/perl /opt/zextras/libexec/zmpostfixpolicyd
 #
 # ====================================================================
 # Interfaces to non-Postfix software. Be sure to examine the manual
