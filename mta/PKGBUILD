@@ -276,10 +276,6 @@ _postinst_legacy() {
   if [ -d /run/systemd/system ]; then
     systemctl daemon-reload &>/dev/null || :
     systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
-    systemctl enable carbonio-mta-queue-log.timer carbonio-antispam-train.timer carbonio-antispam-train-cleanup.timer carbonio-antispam-bayes-expire.timer carbonio-mailthreat-tmp-cleanup.timer carbonio-mailthreat-quarantine-cleanup.timer carbonio-policyd-cleanup.timer &>/dev/null || :
-    if systemctl -q is-active carbonio-mta.target; then
-      systemctl start carbonio-mta-queue-log.timer carbonio-antispam-train.timer carbonio-antispam-train-cleanup.timer carbonio-antispam-bayes-expire.timer carbonio-mailthreat-tmp-cleanup.timer carbonio-mailthreat-quarantine-cleanup.timer carbonio-policyd-cleanup.timer &>/dev/null || :
-    fi
   fi
 }
 
@@ -288,6 +284,10 @@ _postinst_systemd() {
     systemctl daemon-reload &>/dev/null || :
     systemctl enable carbonio-mta.target &>/dev/null || :
     systemctl enable carbonio-mta-sidecar.service &>/dev/null || :
+    systemctl enable carbonio-mta-queue-log.timer carbonio-antispam-train.timer carbonio-antispam-train-cleanup.timer carbonio-antispam-bayes-expire.timer carbonio-mailthreat-tmp-cleanup.timer carbonio-mailthreat-quarantine-cleanup.timer carbonio-policyd-cleanup.timer &>/dev/null || :
+    if systemctl -q is-active carbonio-mta.target; then
+      systemctl start carbonio-mta-queue-log.timer carbonio-antispam-train.timer carbonio-antispam-train-cleanup.timer carbonio-antispam-bayes-expire.timer carbonio-mailthreat-tmp-cleanup.timer carbonio-mailthreat-quarantine-cleanup.timer carbonio-policyd-cleanup.timer &>/dev/null || :
+    fi
   fi
 }
 
