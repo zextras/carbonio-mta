@@ -1,3 +1,9 @@
+## [4.3.2](https://github.com/zextras/carbonio-mta/compare/v4.3.1...v4.3.2) (2026-11-17)
+
+### Bug Fixes
+
+* **release:** keep the mta package version in step with the release ([#132](https://github.com/zextras/carbonio-mta/issues/132)) ([a8ccf6d](https://github.com/zextras/carbonio-mta/commit/a8ccf6dfc8dca3c272f96193e82e3a5abdafad21))
+
 ## [4.3.1](https://github.com/zextras/carbonio-mta/compare/v4.3.0...v4.3.1) (2026-11-17)
 
 ### Bug Fixes
