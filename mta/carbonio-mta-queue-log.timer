@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+[Unit]
+Description=Carbonio MTA Queue Logging Every 10 Minutes
+Documentation=https://docs.zextras.com/
+PartOf=carbonio-mta.target
+
+[Timer]
+OnCalendar=*:00/10
+Persistent=true
+
+[Install]
+WantedBy=carbonio-mta.target

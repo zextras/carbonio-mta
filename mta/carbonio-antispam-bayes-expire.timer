@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+[Unit]
+Description=Carbonio Antispam Bayes Expiry Daily
+Documentation=https://docs.zextras.com/
+PartOf=carbonio-mta.target
+
+[Timer]
+OnCalendar=*-*-* 23:20:00
+Persistent=true
+
+[Install]
+WantedBy=carbonio-mta.target
