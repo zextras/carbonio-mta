@@ -58,7 +58,7 @@ conflicts=(
 # Noble only: it is the only Debian package that ships the units, and on RPM yap
 # would turn replaces into Obsoletes.
 replaces__ubuntu_noble=(
-  "carbonio-core<4.10.0"
+  "carbonio-core (<< 4.10.0)"
 )
 source=(
   "211-carbonio-mta.sh"
