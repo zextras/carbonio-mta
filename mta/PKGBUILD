@@ -19,7 +19,7 @@ depends__apt=(
   "carbonio-amavisd"
   "carbonio-clamav"
   "carbonio-configd"
-  "carbonio-core>=4.10.0"
+  "carbonio-core>=4.11.0"
   "carbonio-mariadb"
   "carbonio-opendkim"
   "carbonio-perl-mail-spamassassin"
@@ -35,7 +35,7 @@ depends__yum=(
   "carbonio-amavisd"
   "carbonio-clamav"
   "carbonio-configd"
-  "carbonio-core>=4.10.0"
+  "carbonio-core>=4.11.0"
   "carbonio-mariadb"
   "carbonio-opendkim"
   "carbonio-perl-mail-spamassassin"
@@ -53,12 +53,12 @@ conflicts=(
   "mail-transport-agent"
 )
 
-# carbonio-core < 4.10.0 shipped these scheduled-job units. Replaces lets dpkg
+# carbonio-core < 4.11.0 shipped these scheduled-job units. Replaces lets dpkg
 # take the files over when carbonio-mta is unpacked before core is upgraded.
 # Noble only: it is the only Debian package that ships the units, and on RPM yap
 # would turn replaces into Obsoletes.
 replaces__ubuntu_noble=(
-  "carbonio-core (<< 4.10.0)"
+  "carbonio-core (<< 4.11.0)"
 )
 source=(
   "211-carbonio-mta.sh"
