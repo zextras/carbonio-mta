@@ -21,8 +21,11 @@
     ["@semantic-release/changelog", {
       "changelogFile": "CHANGELOG.md"
     }],
+    ["@semantic-release/exec", {
+      "prepareCmd": "sed -i 's/^pkgver=.*/pkgver=\"${nextRelease.version}\"/' mta/PKGBUILD"
+    }],
     ["@semantic-release/git", {
-      "assets": ["CHANGELOG.md"],
+      "assets": ["CHANGELOG.md", "mta/PKGBUILD"],
       "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
     }],
     "@semantic-release/github"
