@@ -1,3 +1,13 @@
+## [4.3.0](https://github.com/zextras/carbonio-mta/compare/v4.2.13...v4.3.0) (2026-11-17)
+
+### Features
+
+* **systemd:** [CO-2512] ship the mta scheduled jobs as timers ([#128](https://github.com/zextras/carbonio-mta/issues/128)) ([5092ff0](https://github.com/zextras/carbonio-mta/commit/5092ff0d0641dd064e647ed2f9353bf49ded289a))
+
+### Bug Fixes
+
+* **systemd:** [CO-2512] carbonio-core 4.11.0 is the release without the role units ([#129](https://github.com/zextras/carbonio-mta/issues/129)) ([e11b38a](https://github.com/zextras/carbonio-mta/commit/e11b38a8ebf471fc4f9a69fdce4079e1755f3732))
+
 ## [4.2.13](https://github.com/zextras/carbonio-mta/compare/v4.2.12...v4.2.13) (2026-11-16)
 
 ### Bug Fixes
