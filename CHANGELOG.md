@@ -1,3 +1,10 @@
+## [4.3.1](https://github.com/zextras/carbonio-mta/compare/v4.3.0...v4.3.1) (2026-11-17)
+
+### Bug Fixes
+
+* **mta:** run the postfix policy service as zextras ([#130](https://github.com/zextras/carbonio-mta/issues/130)) ([3dbdaf4](https://github.com/zextras/carbonio-mta/commit/3dbdaf4f021f170dcafacf15466914291c4dbcf9))
+* **mta:** update the postfix_master.cf.in checksum ([#131](https://github.com/zextras/carbonio-mta/issues/131)) ([a784707](https://github.com/zextras/carbonio-mta/commit/a7847074f589cb2c86eb5ede7a3392d07112cf5c)), closes [#130](https://github.com/zextras/carbonio-mta/issues/130)
+
 ## [4.3.0](https://github.com/zextras/carbonio-mta/compare/v4.2.13...v4.3.0) (2026-11-17)
 
 ### Features
