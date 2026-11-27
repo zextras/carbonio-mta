@@ -8,15 +8,12 @@ Documentation=https://docs.zextras.com/
 After=carbonio-mta.target
 # configd writes the file only where policyd is enabled; the cleanup exits 1
 # without it
-ConditionPathExists=/opt/zextras/conf/cbpolicyd.conf
+ConditionPathExists=/opt/zextras/conf/gopp-policyd.cfg
 
 [Service]
 Type=oneshot
 User=zextras
 Group=zextras
-# The environment the zextras login shell (.bashrc) gives the scripts
-Environment=PATH=/opt/zextras/bin:/opt/zextras/common/lib/jvm/java/bin:/opt/zextras/common/bin:/opt/zextras/common/sbin:/usr/sbin:/usr/bin:/sbin:/bin
-Environment=PERL5LIB="/opt/zextras/common/lib/perl5/x86_64-linux-gnu-thread-multi:/opt/zextras/common/lib/perl5/x86_64-linux-thread-multi:/opt/zextras/common/lib/perl5"
-ExecStart=/opt/zextras/bin/zmcbpadmin --cleanup
+ExecStart=/opt/zextras/common/bin/gopp -carbonio cleanup -c /opt/zextras/conf/gopp-policyd.cfg
 Nice=10
 IOSchedulingClass=idle

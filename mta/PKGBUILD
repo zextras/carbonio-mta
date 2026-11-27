@@ -24,7 +24,7 @@ depends__apt=(
   "carbonio-opendkim"
   "carbonio-perl-mail-spamassassin"
   "carbonio-pflogsumm"
-  "carbonio-policyd"
+  "carbonio-gopolicyd"
   "carbonio-postfix"
   "carbonio-spamassassin-rules"
   "sqlite3"
@@ -40,7 +40,7 @@ depends__yum=(
   "carbonio-opendkim"
   "carbonio-perl-mail-spamassassin"
   "carbonio-pflogsumm"
-  "carbonio-policyd"
+  "carbonio-gopolicyd"
   "carbonio-postfix"
   "carbonio-spamassassin-rules"
   "sqlite"
@@ -100,7 +100,7 @@ sha256sums=(
   '0e6762e3ed3ec2282430a1fbec40e7e468aa5a1f26f01a14dea97ab08c8e437e'
   '87e996a4e37d29d0f575e987faf5166d33a2f4970041b6c880702a41566d3315'
   '240157c8b9bbd1686abd45f5936ccbaf4a63aeab2414b551a6ff6b70de9b4524'
-  '2f1f9a581aef1b377f993638faaa6b9238477ac099bbdcf242f463a24fc1e5b3'
+  '39d8a922fa27a8193acf3d693aac48c1839d392071a7eb1c6b7adef59a370544'
   '859386aa88ca443617c5c7b575333513e81555ad3ae6c2bd8ed61e577370fbd1'
   '4c86497fd1a5ec0bcca2250e10f477f5c4f4f178dc4a62173383f0b4e53a5829'
   '18aec2fc0c687f24f40bad9a6f64bb4f00ea513a218e6a3c5cdf3c900dff8a40'
@@ -118,7 +118,7 @@ sha256sums=(
   '06b6c4e225c137532e250cc47c83669ad5e8721c8646a6ca643d9610a8f8a8b6'
   '1945f66d51a371d4530b2e29f144287bd3a25de89b005e7e23d5fc377d89234e'
   '8d20143ee1f89409b794877a64c9287f45eb79896d957c5c83428fb9994ac016'
-  '5d5d58cb01efea52fbd4b79a1118d100358568b60ad6095bdecd79f8382fb0a8'
+  '664d5cd5e02271d7cbda81e3640fc02c22c8cfee3e5adcb4e4669598e77161f7'
   'b53b6a08db40356c6a591cc97564a63b346a7a798b94733d6dca12d84722b51a'
 )
 
